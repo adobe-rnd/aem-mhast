@@ -1,0 +1,144 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Markup, Sections, Blocks, and Auto Blocking</title>
+    <link rel="canonical" href="https://www.aem.live/developer/markup-sections-blocks">
+    <meta name="description" content="To design websites and create functionality, developers use the markup and DOM that is rendered dynamically from the content. The markup and DOM are constructed ...">
+    <meta property="og:title" content="Markup, Sections, Blocks, and Auto Blocking">
+    <meta property="og:description" content="To design websites and create functionality, developers use the markup and DOM that is rendered dynamically from the content. The markup and DOM are constructed ...">
+    <meta property="og:url" content="https://www.aem.live/developer/markup-sections-blocks">
+    <meta property="og:image" content="https://www.aem.live/developer/media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=1200&#x26;format=pjpg&#x26;optimize=medium">
+    <meta property="og:image:secure_url" content="https://www.aem.live/developer/media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=1200&#x26;format=pjpg&#x26;optimize=medium">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Markup, Sections, Blocks, and Auto Blocking">
+    <meta name="twitter:description" content="To design websites and create functionality, developers use the markup and DOM that is rendered dynamically from the content. The markup and DOM are constructed ...">
+    <meta name="twitter:image" content="https://www.aem.live/developer/media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=1200&#x26;format=pjpg&#x26;optimize=medium">
+    <meta name="template" content="guides">
+    <meta name="category" content="Build"><!-- v7 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script nonce="0j91gRSZH8ieDqCbihwHSff4" src="/scripts/lib-franklin.js" type="module"></script>
+    <script nonce="0j91gRSZH8ieDqCbihwHSff4" src="/scripts/scripts.js" type="module"></script>
+    <script nonce="0j91gRSZH8ieDqCbihwHSff4" src="/scripts/indexing-test.js?date=2024-08-16" type="module"></script>
+    <link rel="stylesheet" href="/styles/styles.css">
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <div>
+        <div class="section-metadata">
+          <div>
+            <div>style</div>
+            <div>content</div>
+          </div>
+        </div>
+        <p>
+          <picture>
+            <source type="image/webp" srcset="./media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=2000&#x26;format=webply&#x26;optimize=medium" media="(min-width: 600px)">
+            <source type="image/webp" srcset="./media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=750&#x26;format=webply&#x26;optimize=medium">
+            <source type="image/jpeg" srcset="./media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=2000&#x26;format=jpeg&#x26;optimize=medium" media="(min-width: 600px)">
+            <img loading="lazy" alt="" src="./media_1a70c29a5d772d0dc5f0cd8d513af41df5bb8177d.jpeg?width=750&#x26;format=jpeg&#x26;optimize=medium" width="1103" height="827">
+          </picture>
+        </p>
+        <h1 id="markup-sections-blocks-and-auto-blocking">Markup, Sections, Blocks, and Auto Blocking</h1>
+        <p>To design websites and create functionality, developers use the markup and DOM that is rendered dynamically from the content. The markup and DOM are constructed in a way that allows flexible manipulation and styling. At the same time it provides out-of-the-box functionality so the developer does not have to worry about some of the aspects of modern websites.</p>
+        <h2 id="structure-of-a-document">Structure of a Document</h2>
+        <p>The single most important aspect when structuring a document is to make it simple and intuitive for authors who will contribute the content.</p>
+        <p>This means that it is strongly recommended to involve authors very early in the process. In many cases it is good practice to just let authors put the content that needs to go on to a page into a Google Doc or Word document without having any notion of blocks and section, and then try to make small structural changes and introduce sections and blocks only where necessary.</p>
+        <p>A document follows the following structure in the abstract.</p>
+        <p>
+          <picture>
+            <source type="image/webp" srcset="./media_125ee1e7dbebdfdac6eb972fdbeff2a361d4e85cf.png?width=2000&#x26;format=webply&#x26;optimize=medium" media="(min-width: 600px)">
+            <source type="image/webp" srcset="./media_125ee1e7dbebdfdac6eb972fdbeff2a361d4e85cf.png?width=750&#x26;format=webply&#x26;optimize=medium">
+            <source type="image/png" srcset="./media_125ee1e7dbebdfdac6eb972fdbeff2a361d4e85cf.png?width=2000&#x26;format=png&#x26;optimize=medium" media="(min-width: 600px)">
+            <img loading="lazy" alt="" src="./media_125ee1e7dbebdfdac6eb972fdbeff2a361d4e85cf.png?width=750&#x26;format=png&#x26;optimize=medium" width="950" height="1092">
+          </picture>
+        </p>
+        <p>A page as authored in Word or a Google Doc document uses the well-understood semantic model like headings, body text, lists, images, links, etc. that is shared between HTML, markdown, and Google Doc / Word. We call this <strong>default content</strong>. In an ideal situation one would leave as much of the content authored as default content as possible, since this is the natural way for authors to treat documents.<br><br>In addition to default content, we have a concept of page <strong>sections</strong>, separated by horizontal rules or <code>---</code> to group certain elements of a page together. There may be both semantic and design reasons to group content together. A simple case could be that a section of a page has a different background color.<br><br>In addition to that there is concept of <strong>blocks</strong> which are authored as a table with a heading as the first row that identifies the type of block. This concept is the easiest approach to componentize your code.</p>
+        <p>Sections can contain multiple blocks. Blocks should never be nested as it makes things very hard to use for authors.</p>
+        <h2 id="dom-vs-markup">DOM vs. Markup</h2>
+        <p>AEM produces a clean and easily readable semantic markup from the content that’s provided to it. You can easily access it using the <strong>view source</strong> feature and have a look at the markup of the page you are currently reading.</p>
+        <p>The JavaScript library used in <code>scripts.js</code> takes the markup and enhances it into a DOM that is then used for most development tasks, specifically to build blocks. To create a DOM that’s easy to work with for custom project code, it is best to view it as a two-step process.</p>
+        <p><br>In the first step, we create the markup with sections, blocks, and default content that will look similar to this.<br><br>
+          <picture>
+            <source type="image/webp" srcset="./media_147eb4f680b068670fbc2e8bc7f2d7a697b2940ed.png?width=2000&#x26;format=webply&#x26;optimize=medium" media="(min-width: 600px)">
+            <source type="image/webp" srcset="./media_147eb4f680b068670fbc2e8bc7f2d7a697b2940ed.png?width=750&#x26;format=webply&#x26;optimize=medium">
+            <source type="image/png" srcset="./media_147eb4f680b068670fbc2e8bc7f2d7a697b2940ed.png?width=2000&#x26;format=png&#x26;optimize=medium" media="(min-width: 600px)">
+            <img loading="lazy" alt="" src="./media_147eb4f680b068670fbc2e8bc7f2d7a697b2940ed.png?width=750&#x26;format=png&#x26;optimize=medium" width="1600" height="991">
+          </picture>
+        </p>
+        <p>In the second step, the above mark-up is augmented into the following example DOM, which then can be used for styling and adding functionality. The differences between the markup that’s delivered from the server and the augmented DOM that is used for most of the development tasks is highlighted below.</p>
+        <p>It primarily consists of introducing a wrapper <code>&#x3C;div></code> for blocks and default content and dynamically adding additional helpful CSS classes and data attributes that are used by the AEM block loader.</p>
+        <p>
+          <picture>
+            <source type="image/webp" srcset="./media_11e4f14204c1a0b5796ce1b86bf40c015682be287.png?width=2000&#x26;format=webply&#x26;optimize=medium" media="(min-width: 600px)">
+            <source type="image/webp" srcset="./media_11e4f14204c1a0b5796ce1b86bf40c015682be287.png?width=750&#x26;format=webply&#x26;optimize=medium">
+            <source type="image/png" srcset="./media_11e4f14204c1a0b5796ce1b86bf40c015682be287.png?width=2000&#x26;format=png&#x26;optimize=medium" media="(min-width: 600px)">
+            <img loading="lazy" alt="" src="./media_11e4f14204c1a0b5796ce1b86bf40c015682be287.png?width=750&#x26;format=png&#x26;optimize=medium" width="1600" height="1082">
+          </picture>
+        </p>
+        <h2 id="sections">Sections</h2>
+        <p>Sections are a way to group default content and blocks by the author. Most of the time section breaks are introduced based on visual differences between sections such as a different background color for a part of a page.</p>
+        <p>From a development perspective, there is usually not much interaction with sections beyond CSS styling.<br>Sections can contain a special block called <code>Section Metadata</code>, which results in data attributes to a section. The names of the data attributes can be chosen by the authors, and the only well-known section metadata property is <code>Style</code> which will be turned into additional CSS classes added to the containing section element.</p>
+        <p>Blocks and default content are always wrapped in a section, even if the author doesn’t specifically introduce section breaks.</p>
+        <h2 id="default-content">Default Content</h2>
+        <p>There is a broad range of semantics that are shared between Word documents, Google Docs, markdown, and HTML. For example there are headings of different levels (eg. <code>&#x3C;h1></code> - <code>&#x3C;h6></code>), images, links, lists (<code>&#x3C;ul></code>, <code>&#x3C;ol></code>), emphasis (<code>&#x3C;em></code>, <code>&#x3C;strong></code>) etc.</p>
+        <p>We take advantage of the intuitive understanding that authors have of how to use these semantics in the tools that they are familiar with (eg. Word/Google docs) and maps those to markdown and then renders them in the HTML markup.</p>
+        <p>All mappings should be relatively straightforward and intuitive for the developer. One area where we go a little bit further than the simplest possible translation is in handling images. Instead of a simple <code>&#x3C;img></code> tag, a full <code>&#x3C;picture></code> tag is rendered with a number of different resolutions needed for display on desktop and mobile devices as well as different formats for modern browsers that support webp and older browsers which do not.</p>
+        <h2 id="blocks">Blocks</h2>
+        <p>Most of the project-specific CSS and JavaScript lives in blocks. Authors create blocks in their documents and developers write the corresponding code that styles the blocks with CSS and/or decorates the DOM to take the markup of a block and transform it to the structure that’s needed or convenient for desired styling and functionality.</p>
+        <p>The block name is used as both the folder name of a block as well as the filename for the CSS and JavaScript files that are loaded by the block loader when a block is used on a page. The block name is also used as the CSS class name on the block to allow for intuitive styling.</p>
+        <p>The JavaScript is loaded as a Module (ESM) and exports a default function that is executed as part of the block loading.</p>
+        <p>All block level CSS should be scoped to the block to make sure that there are no side-effects for other parts of your project, which means that all selectors in a block should be prefixed with the corresponding block class. In certain cases it makes sense to use the block’s wrapper or containing section for the selector as well.</p>
+        <p>There is a balance of DOM manipulation in JavaScript and complexity of the CSS selectors. Complex brittle CSS selectors are not recommended and at the same time adding classes to every element makes your code more complex and disregards the semantics of elements.</p>
+        <p>One of the most important tenets of a project is to keep things simple and intuitive for authors. Complicated blocks make it hard to author content, so it is important that developers absorb the complexity of translating an intuitive authoring experience into the DOM that is needed for layout or application logic. It is often tempting to delegate complexity to the author. Instead, developers should make sure that blocks do not become unwieldy to create for authors. An author should always be able to simply copy/paste a block and intuitively understand what it is about.</p>
+        <p>A simple example is the <a href="https://github.com/adobe/helix-project-boilerplate/tree/main/blocks/columns">Columns Block</a>. It adds additional classes in JavaScript based on how many columns are in the respective instance created by the author. This allows it to be able to use flexible styling of content that is in two columns vs. three columns.</p>
+        <p>Blocks can be very simple or contain full application components or widgets and provide a way for the developer to componentize their codebase into small chunks of code that can be managed easily and can be loaded on to the web pages as needed.</p>
+        <p>A block’s content is rendered into the markup as nested <code>&#x3C;div></code> tags for the rows and columns that the author entered. In the simplest case, a block has only a single cell.</p>
+        <pre><code>&#x3C;div class=”blockname”>
+  &#x3C;div>
+     &#x3C;div>
+      &#x3C;p>Hello, World.&#x3C;/p>
+     &#x3C;/div>
+  &#x3C;/div>
+&#x3C;/div>
+</code></pre>
+        <p>Authors can add blocks to their pages in an ad-hoc manner by simply adding a table with the block name in the first row or table heading. Some blocks are also loaded automatically. <code>header</code> and <code>footer</code> blocks that need to be present on every page of a site are a good example of that.</p>
+        <h3 id="block-options">Block Options</h3>
+        <p>If you need a block to look or behave slightly differently based on certain circumstances, but not different enough to become a new block in itself, you can let authors add <strong>block options</strong> to blocks in parentheses. These options add modified classes to the block. For example <code>Columns (wide)</code> in a table header will generate the following markup.</p>
+        <p><code>&#x3C;div class=”columns wide”></code></p>
+        <p>Block options can also contain multiple words. For example <code>Columns (super wide)</code> will be concatenated using hyphens.</p>
+        <p><code>&#x3C;div class=”columns super-wide”></code></p>
+        <p>If block options are comma-separated, such as <code>Columns (dark, wide)</code>, they will be added as separate classes.</p>
+        <p><code>&#x3C;div class=”columns dark wide”></code></p>
+        <h2 id="auto-blocking">Auto Blocking</h2>
+        <p>In an ideal scenario the majority of content is authored outside of blocks, as introducing tables into a document makes it harder to read and edit. Conversely blocks provide a great mechanism for developers to keep their code organized.</p>
+        <p>A frequently-used mechanism to get the best of both worlds is called <strong>auto blocking</strong>. Auto blocking turns default content and metadata into blocks without the author having to physically create them. Auto blocking happens very early in the page decoration process before blocks are loaded and is a practice that programmatically creates the DOM structure of a block as it would come as markup from the server.</p>
+        <p>Auto blocking is often used in combination with metadata, particularly the <code>template</code> property. If pages have a common template, meaning that they share a certain page design or functionality, that’s usually a good opportunity for auto blocking.</p>
+        <p>A good example is an article header of a blog post. It might contain information about the author, the title of the blog post, a hero image, as well as the publication date. Instead of having the author put together a block that contains all that information, an auto block (e.g. article-header block) would be programmatically added to the page based on the &#x3C;h1>, the first image, the blog author, and publication date metadata.</p>
+        <p>This allows the content author to keep the information in its natural place, the document structure outside of a block. At the same time, the developer can keep all the layout and styling information in a block.</p>
+        <p>Another very common use case is to wrap blocks around links in a document. A good example is an author linking to a YouTube video by simply including a link, while the developer would like to keep all the code for the video inline embed in an <code>embed</code> block.</p>
+        <p>This mechanism can also be used as a flexible way to include both external applications and internal references to video, content fragments, modals, forms, and other application elements.</p>
+        <p>The code for your projects auto blocking lives in <code>buildAutoBlocks()</code> in your <code>scripts.js</code>.</p>
+        <p>Please see the following examples of auto blocking.</p>
+        <ul>
+          <li><a href="https://github.com/adobe/blog/blob/3f4318d622e2626aca65c239ad0bf2b4b45012a2/scripts/scripts.js#L823-L852">Adobe Blog</a></li>
+          <li><a href="https://github.com/adobe/aem-boilerplate">AEM Boilerplate</a></li>
+        </ul>
+        <div class="pagination contained">
+          <div>
+            <div>
+              <p><span class="icon icon-icon-arrow"></span>Previous</p>
+              <h3 id="keeping-it-100"><a href="/developer/keeping-it-100">Keeping it 100</a></h3>
+            </div>
+            <div>
+              <p>Up Next<span class="icon icon-icon-arrow"></span></p>
+              <h3 id="spreadsheets"><a href="/developer/spreadsheets">Spreadsheets</a></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer></footer>
+  </body>
+</html>
