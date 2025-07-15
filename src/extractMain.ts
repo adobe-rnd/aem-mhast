@@ -1,17 +1,27 @@
-import { visit } from 'unist-util-visit';
+/*
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 import { extractContentElement } from './extractContent';
 import { remove } from 'unist-util-remove';
 import { whitespace } from 'hast-util-whitespace';
+import { select } from 'hast-util-select';
+import { Element } from 'hast';
 
 /**
  * Extract section metadata from a <div class="section-metadata">.
  * @param {any} sectionDiv
  * @returns {Record<string, string>|undefined}
  */
-export function extractSectionMetadata(sectionDiv: any): Record<string, string> | undefined {
-  const metaDiv = (sectionDiv.children || []).find(
-    (c: any) => c.type === 'element' && c.tagName === 'div' && c.properties && c.properties.className && c.properties.className.includes('section-metadata')
-  );
+export function extractSectionMetadata(sectionDiv: Element): Record<string, string> | undefined {
+  const metaDiv = select('div.section-metadata', sectionDiv);
   if (!metaDiv) return undefined;
   // Metadata is usually a set of <div><div>key</div><div>value</div></div>
   const meta: Record<string, string> = {};
@@ -32,7 +42,7 @@ export function extractSectionMetadata(sectionDiv: any): Record<string, string> 
  * @param {any} mainNode
  * @returns {Array<{metadata?: Record<string, string>, section: any[]}>}
  */
-export function extractMain(mainNode: any): Array<{metadata?: Record<string, string>, section: any[]}> {
+export function extractMain(mainNode: Element): Array<{metadata?: Record<string, string>, section: any[]}> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes

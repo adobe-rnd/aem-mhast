@@ -1,14 +1,20 @@
 // utils.ts
+
+import { Element, Text } from "hast";
+
 /**
  * Recursively extract text content from a node.
  * @param {object} node
  * @returns {string}
  */
-export function getText(node: any): string {
+export function getText(node: Text | Element): string {
   if (!node) return '';
   if (node.type === 'text') return node.value;
   if (!node.children) return '';
-  return node.children.map(getText).join('');
+  return node.children
+    .filter((child): child is Text | Element => child.type === 'text' || child.type === 'element')
+    .map(child => getText(child))
+    .join('');
 }
 
 /**
@@ -16,7 +22,7 @@ export function getText(node: any): string {
  * @param {object} node
  * @returns {Record<string, string | number> | undefined}
  */
-export function getAttrs(node: any): Record<string, string | number> | undefined {
+export function getAttrs(node: Element): Record<string, string | number> | undefined {
   if (!node.properties) return undefined;
   const attrs: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(node.properties)) {

@@ -13,6 +13,7 @@ import { parseHtml } from './parseHtml.js';
 import { extractHead } from './extractHead';
 import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
+import { Element } from 'hast';
 
 export default {
 	async fetch(request: Request): Promise<Response> {
@@ -29,15 +30,17 @@ export default {
 			if (!edsResp.ok) {
 				return new Response(`Failed to fetch EDS page: ${edsUrl}`, { status: edsResp.status });
 			}
+
 			const html = await edsResp.text();
 			const tree = parseHtml(html);
 			const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
 			if (!htmlNode) throw new Error('No <html> root found');
-			const headNode = select('head', htmlNode);
-			const mainNode = select('main', htmlNode);
+
+			const headNode = select('head', htmlNode) as Element;
+			const mainNode = select('main', htmlNode) as Element;
 			const json = {
-				head: extractHead(headNode as object),
-				main: extractMain(mainNode as object),
+				head: extractHead(headNode),
+				main: extractMain(mainNode),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },
