@@ -26,7 +26,7 @@ export default {
 			}
 
 			const compact = url.searchParams.get('compact') === 'true';
-			const includeHead = url.searchParams.get('includeHead') === 'true';
+			const includeHead = url.searchParams.get('head') !== 'false';
 
 			const edsPath = rest.join('/') || '';
 			const edsUrl = `https://main--${site}--${org}.aem.live/${edsPath}`;
@@ -43,8 +43,8 @@ export default {
 			const headNode = select('head', htmlNode) as Element;
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
-				head: includeHead ? extractHead(headNode) : undefined,
-				main: extractMain(mainNode, compact),
+				metadata: includeHead ? extractHead(headNode) : undefined,
+				content: extractMain(mainNode, compact),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },
