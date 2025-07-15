@@ -1,22 +1,22 @@
-import { getAttrs, getText } from './utils.js';
+import { getAttrs, getText } from './utils';
 
 /**
  * Extract <head> children to JSON.
  * @param {object} headNode
- * @returns {Array}
+ * @returns {Record<string, any>}
  */
-export function extractHead(headNode) {
+export function extractHead(headNode: any): Record<string, any> {
   if (!headNode || !headNode.children) return {};
-  const result = {};
+  const result: Record<string, any> = {};
   
-  const keyAttributes = {
+  const keyAttributes: Record<string, string | string[]> = {
     link: 'rel',
     meta: ['name', 'property']
   };
   
   headNode.children
-    .filter(child => child.type === 'element')
-    .forEach(child => {      
+    .filter((child: any) => child.type === 'element')
+    .forEach((child: any) => {      
       const attrs = getAttrs(child);
       const keyAttr = keyAttributes[child.tagName];
       let key;
@@ -28,9 +28,9 @@ export function extractHead(headNode) {
         }
       }
 
-      if (child.tagName === "link" && key) {
+      if (child.tagName === "link" && key && attrs && typeof attrs.href === 'string') {
         result[key] = { href: attrs.href };
-      } else if (child.tagName === "meta" && key) {
+      } else if (child.tagName === "meta" && key && attrs && typeof attrs.content === 'string') {
         const meta = result["meta"] || [];
         const metaObj = {
           tag: key,
@@ -39,7 +39,7 @@ export function extractHead(headNode) {
         meta.push(metaObj);
         result["meta"] = meta;
       } else { // TODO: handle script and style tags  
-        const obj = {};
+        const obj: Record<string, any> = {};
         if (attrs) obj.attrs = attrs;
         if (["title", "script", "style"].includes(child.tagName)) {
           obj.text = getText(child);

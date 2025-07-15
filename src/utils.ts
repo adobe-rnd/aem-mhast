@@ -1,10 +1,10 @@
-// utils.js
+// utils.ts
 /**
  * Recursively extract text content from a node.
  * @param {object} node
  * @returns {string}
  */
-export function getText(node) {
+export function getText(node: any): string {
   if (!node) return '';
   if (node.type === 'text') return node.value;
   if (!node.children) return '';
@@ -14,11 +14,11 @@ export function getText(node) {
 /**
  * Extract attributes from a node's properties.
  * @param {object} node
- * @returns {object|undefined}
+ * @returns {Record<string, string | number> | undefined}
  */
-export function getAttrs(node) {
+export function getAttrs(node: any): Record<string, string | number> | undefined {
   if (!node.properties) return undefined;
-  const attrs = {};
+  const attrs: Record<string, string | number> = {};
   for (const [key, value] of Object.entries(node.properties)) {
     if (typeof value === 'string' || typeof value === 'number') {
       attrs[key] = value;
@@ -34,7 +34,7 @@ export function getAttrs(node) {
  * @param {object} node
  * @returns {boolean}
  */
-export function isBlockDiv(node) {
+export function isBlockDiv(node: any): boolean {
   return (
     node.type === 'element' &&
     node.tagName === 'div' &&

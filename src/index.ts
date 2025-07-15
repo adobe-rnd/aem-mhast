@@ -1,18 +1,17 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
+/*
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
  *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 import { parseHtml } from './parseHtml.js';
-import { extractHead } from './extractHead.js';
-import { extractMain } from './extractMain.js';
+import { extractHead } from './extractHead';
+import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
 
 export default {
@@ -34,11 +33,11 @@ export default {
 			const tree = parseHtml(html);
 			const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
 			if (!htmlNode) throw new Error('No <html> root found');
-			const headNode = htmlNode.children.find((n: any) => n.type === 'element' && n.tagName === 'head');
+			const headNode = select('head', htmlNode);
 			const mainNode = select('main', htmlNode);
 			const json = {
-				head: extractHead(headNode),
-				main: extractMain(mainNode),
+				head: extractHead(headNode as object),
+				main: extractMain(mainNode as object),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },

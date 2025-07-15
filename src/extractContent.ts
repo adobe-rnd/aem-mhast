@@ -1,13 +1,12 @@
-// extractContent.js
-import { getText, isBlockDiv } from './utils.js';
+import { getText, isBlockDiv } from './utils';
 
 /**
  * Extract block options from className.
- * @param {Array} classNameArr
+ * @param {Array<string>} classNameArr
  * @param {string} blockName
- * @returns {Array}
+ * @returns {Array<string>}
  */
-export function extractBlockOptions(classNameArr, blockName) {
+export function extractBlockOptions(classNameArr: string[] | undefined, blockName: string): string[] {
   if (!classNameArr) return [];
   return classNameArr.filter(cls => cls !== blockName);
 }
@@ -15,16 +14,16 @@ export function extractBlockOptions(classNameArr, blockName) {
 /**
  * Extract list items recursively, preserving structure.
  * @param {object} listNode
- * @returns {Array}
+ * @returns {Array<any>}
  */
-export function extractListItems(listNode) {
+export function extractListItems(listNode: any): any[] {
   return (listNode.children || [])
-    .filter(child => child.type === 'element' && child.tagName === 'li')
-    .map(li => {
+    .filter((child: any) => child.type === 'element' && child.tagName === 'li')
+    .map((li: any) => {
       // Extract all content from the <li>
       const items = (li.children || [])
         .map(extractContentElement)
-        .flatMap(x => Array.isArray(x) ? x : [x])
+        .flatMap((x: any) => Array.isArray(x) ? x : [x])
         .filter(Boolean);
       if (items.length === 1 && typeof items[0] === 'string') {
         return items[0];
@@ -41,9 +40,9 @@ export function extractListItems(listNode) {
 /**
  * Main content extraction dispatcher.
  * @param {object} node
- * @returns {object|Array|null}
+ * @returns {object|Array<any>|null}
  */
-export function extractContentElement(node) {
+export function extractContentElement(node: any): any {
   if (node.type === 'text') return {type: "text", text: getText(node)};
   if (!node || node.type !== 'element') return null;
   
@@ -60,8 +59,7 @@ export function extractContentElement(node) {
   // TODO handle p with children like <strong> or <em>
   // TODO hanlde em with children like <a>
   if (tagName === 'p' || tagName === 'strong' || tagName === 'em') {
-    console.log(node);
-
+    // console.log(node);
     const type = tagName === 'p' ? 'paragraph' : tagName;
     
     if (node.children.length === 1 && node.children[0].type === 'text') {
@@ -72,7 +70,7 @@ export function extractContentElement(node) {
     }
 
     const content = (node.children || [])
-      .map(child => {
+      .map((child: any) => {
         // If text node, return its text
         if (child.type === 'text') {
           const text = getText(child);
@@ -95,7 +93,7 @@ export function extractContentElement(node) {
   }
 
   if (tagName === 'picture') {
-    const imgNode = (node.children || []).find(c => c.type === 'element' && c.tagName === 'img');
+    const imgNode = (node.children || []).find((c: any) => c.type === 'element' && c.tagName === 'img');
     if (imgNode) {
       return {
         type: 'image',
@@ -129,14 +127,14 @@ export function extractContentElement(node) {
   }
 
   if (tagName === 'table') {
-    const rows = (node.children || []).find(c => c.type === 'element' && c.tagName === 'tbody')?.children || [];
+    const rows = (node.children || []).find((c: any) => c.type === 'element' && c.tagName === 'tbody')?.children || [];
     if (rows.length > 0 && rows[0].type === 'element' && rows[0].tagName === 'tr') {
       const firstRow = rows[0];
-      const ths = (firstRow.children || []).filter(c => c.type === 'element' && c.tagName === 'th');
+      const ths = (firstRow.children || []).filter((c: any) => c.type === 'element' && c.tagName === 'th');
       if (ths.length > 0) {
         const name = getText(ths[0]).trim().toLowerCase();
-        const blockRows = rows.slice(1).map(tr =>
-          (tr.children || []).filter(c => c.type === 'element').map(getText)
+        const blockRows = rows.slice(1).map((tr: any) =>
+          (tr.children || []).filter((c: any) => c.type === 'element').map(getText)
         );
         return {
           type: 'block',
@@ -156,7 +154,7 @@ export function extractContentElement(node) {
       .map(extractContentElement)
       .filter(Boolean);
 
-    const block = {
+    const block: any = {
       type: 'block',
       name,
       content: blockContent
