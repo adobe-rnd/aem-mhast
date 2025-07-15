@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
+import { toHtml } from 'hast-util-to-html';
 import { getText, isBlockDiv } from './utils';
 import { Element } from 'hast';
 
@@ -55,11 +56,19 @@ export function extractListItems(listNode: Element): any[] {
  * @param {object} node
  * @returns {object|Array<any>|null}
  */
-export function extractContentElement(node: any): any {
+export function extractContentElement(node: any, compact: boolean = false): any {
   if (node.type === 'text') return {type: "text", text: getText(node)};
   if (!node || node.type !== 'element') return null;
   
   const { tagName, properties = {} } = node;
+  const type = tagName === 'p' ? 'paragraph' : tagName;
+
+  if (compact && tagName !== 'div') {
+    return {
+      type,
+      content: toHtml(node)
+    };
+  }
 
   if (/^h[1-6]$/.test(tagName)) {
     return {
@@ -69,12 +78,7 @@ export function extractContentElement(node: any): any {
     };
   }
 
-  // TODO handle p with children like <strong> or <em>
-  // TODO hanlde em with children like <a>
   if (tagName === 'p' || tagName === 'strong' || tagName === 'em') {
-    // console.log(node);
-    const type = tagName === 'p' ? 'paragraph' : tagName;
-    
     if (node.children.length === 1 && node.children[0].type === 'text') {
       return {
         type,
@@ -90,7 +94,7 @@ export function extractContentElement(node: any): any {
           return text && text.trim() ? text : null;
         }
         // If element, recursively extract
-        const extracted = extractContentElement(child);
+        const extracted = extractContentElement(child, compact);
         if (Array.isArray(extracted)) {
           return extracted;
         }
@@ -164,7 +168,7 @@ export function extractContentElement(node: any): any {
     const options = extractBlockOptions(properties.className, name)
     // Recursively extract all children as content (including nested blocks)
     const blockContent = (node.children || [])
-      .map(extractContentElement)
+      .map((child: any) => extractContentElement(child, compact))
       .filter(Boolean);
 
     const block: any = {
@@ -181,7 +185,7 @@ export function extractContentElement(node: any): any {
 
   // For non-block <div>, recursively extract their children (flatten)
   if (tagName === 'div') {
-    return (node.children || []).map(extractContentElement).filter(Boolean);
+    return (node.children || []).map((child: any) => extractContentElement(child, compact)).filter(Boolean);
   }
 
   // Fallback: unknown element

@@ -42,7 +42,7 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
  * @param {any} mainNode
  * @returns {Array<{metadata?: Record<string, string>, section: any[]}>}
  */
-export function extractMain(mainNode: Element): Array<{metadata?: Record<string, string>, section: any[]}> {
+export function extractMain(mainNode: Element, compact: boolean = false): Array<{metadata?: Record<string, string>, section: any[]}> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes
@@ -58,7 +58,7 @@ export function extractMain(mainNode: Element): Array<{metadata?: Record<string,
           !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
         )
         .flatMap((child: any) => {
-          const result = extractContentElement(child);
+          const result = extractContentElement(child, compact);
           return Array.isArray(result) ? result : [result];
         })
         .filter(Boolean)

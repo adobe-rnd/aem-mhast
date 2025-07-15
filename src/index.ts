@@ -24,6 +24,10 @@ export default {
 			if (!org || !site) {
 				return new Response('Usage: /org/site/path', { status: 400 });
 			}
+
+			const compact = url.searchParams.get('compact') === 'true';
+			const includeHead = url.searchParams.get('includeHead') === 'true';
+
 			const edsPath = rest.join('/') || '';
 			const edsUrl = `https://main--${site}--${org}.aem.live/${edsPath}`;
 			const edsResp = await fetch(edsUrl);
@@ -39,8 +43,8 @@ export default {
 			const headNode = select('head', htmlNode) as Element;
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
-				head: extractHead(headNode),
-				main: extractMain(mainNode),
+				head: includeHead ? extractHead(headNode) : undefined,
+				main: extractMain(mainNode, compact),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },
