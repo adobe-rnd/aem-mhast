@@ -25,11 +25,12 @@ export default {
 				return new Response('Usage: /org/site/path', { status: 400 });
 			}
 
+			const contentPath = rest.join('/') || '';
 			const context = {
 				org,
 				site,
 				edsDomainUrl: `https://main--${site}--${org}.aem.live`,
-				contentPath: rest.join('/') || ''
+				contentPath: contentPath
 			};
 
 			const compact = url.searchParams.get('compact') === 'true';
@@ -50,7 +51,7 @@ export default {
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
 				metadata: includeHead ? extractHead(headNode) : undefined,
-				content: extractMain(mainNode, compact),
+				content: await extractMain(mainNode, context, compact),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },

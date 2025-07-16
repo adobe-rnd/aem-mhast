@@ -40,27 +40,38 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
 /**
  * Extract all sections from <main> as an array of { metadata, section } objects.
  * @param {any} mainNode
- * @returns {Array<{metadata?: Record<string, string>, section: any[]}>}
+ * @param {any} context
+ * @param {boolean} compact
+ * @returns {Promise<Array<{metadata?: Record<string, string>, section: any[]}>>}
  */
-export function extractMain(mainNode: Element, compact: boolean = false): Array<{ metadata?: Record<string, string>, section: any[] }> {
+export async function extractMain(mainNode: Element, context: any, compact: boolean = false): Promise<Array<{ metadata?: Record<string, string>, section: any[] }>> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes
   remove(mainNode, (node: any) => node.type === 'text' && whitespace(node));
 
   // Each direct <div> child of <main> is a section
-  return mainNode.children
-    .filter((child: any) => child.type === 'element' && child.tagName === 'div')
-    .map((sectionDiv: any) => ({
-      metadata: extractSectionMetadata(sectionDiv),
-      section: (sectionDiv.children || [])
-        .filter((child: any) =>
-          !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
-        )
-        .flatMap((child: any) => {
-          const result = extractContentElement(child, compact);
-          return Array.isArray(result) ? result : [result];
-        })
-        .filter(Boolean)
-    }));
+  const sections = await Promise.all(
+    mainNode.children
+      .filter((child: any) => child.type === 'element' && child.tagName === 'div')
+      .map(async (sectionDiv: any) => {
+        const sectionContent = await Promise.all(
+          (sectionDiv.children || [])
+            .filter((child: any) =>
+              !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
+            )
+            .map(async (child: any) => {
+              const result = await extractContentElement(child, compact, context);
+              return Array.isArray(result) ? result : [result];
+            })
+        );
+
+        return {
+          metadata: extractSectionMetadata(sectionDiv),
+          section: sectionContent.flat().filter(Boolean)
+        };
+      })
+  );
+
+  return sections;
 } 
