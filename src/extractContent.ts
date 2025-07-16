@@ -13,7 +13,7 @@
 import { toHtml } from 'hast-util-to-html';
 import { getText, isBlockDiv } from './utils';
 import { Element } from 'hast';
-import { fetchBlockSchema, applyBlockSchema } from './blockSchemaResolver';
+import { fetchBlockSchema, extractBlockWithSchema } from './blockSchemaResolver';
 import { Ctx } from './context';
 
 /**
@@ -187,7 +187,7 @@ export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
     if (schema) {
       // Schema exists - apply it
       try {
-        blockContent = applyBlockSchema(node, schema, name);
+        blockContent = extractBlockWithSchema(node, schema, name);
       } catch (error) {
         console.warn(`Error applying schema for block ${name}:`, error);
         blockContent = {}; // Return empty data if schema application fails

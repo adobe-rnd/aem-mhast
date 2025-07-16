@@ -13,217 +13,264 @@
 import { Element } from 'hast';
 import { select, selectAll } from 'hast-util-select';
 import { getText } from './utils';
-import { getMockSchema } from './mockSchemas';
 import { Ctx } from './context';
 
+// Constants for magic strings
+const SCHEMA_CONSTANTS = {
+  SELECTOR: 'x-eds-selector',
+  ATTRIBUTE: 'x-eds-attribute',
+  TEXT: 'text',
+  TYPES: {
+    ARRAY: 'array',
+    OBJECT: 'object',
+    STRING: 'string'
+  }
+} as const;
+
+// TypeScript interfaces for better type safety
+interface BaseSchemaProperty {
+  type: string;
+  description?: string;
+  [SCHEMA_CONSTANTS.SELECTOR]?: string;
+}
+
+interface StringSchemaProperty extends BaseSchemaProperty {
+  type: 'string';
+  [SCHEMA_CONSTANTS.ATTRIBUTE]?: string;
+  format?: string;
+}
+
+interface ObjectSchemaProperty extends BaseSchemaProperty {
+  type: 'object';
+  properties?: Record<string, SchemaProperty>;
+  required?: string[];
+}
+
+interface ArraySchemaProperty extends BaseSchemaProperty {
+  type: 'array';
+  items?: SchemaProperty;
+}
+
+type SchemaProperty = StringSchemaProperty | ObjectSchemaProperty | ArraySchemaProperty;
+
+interface BlockSchema {
+  $schema?: string;
+  title?: string;
+  description?: string;
+  type: 'object';
+  properties?: Record<string, SchemaProperty>;
+  required?: string[];
+}
+
 /**
- * Fetch block schema from EDS domain or return mock schema for testing.
- * @param {string} blockName - The name of the block to fetch the schema for
- * @param {Ctx} ctx - The context object containing the organization, site, and compact flag
- * @returns {Promise<any|null>} - The block schema or null if the schema is not found
+ * Fetch block schema from EDS domain.
  */
-export async function fetchBlockSchema(blockName: string, ctx: Ctx): Promise<any | null> {
+export async function fetchBlockSchema(blockName: string, ctx: Ctx): Promise<BlockSchema | null> {
   try {
-    // For now, return mock schema for testing
-    const mockSchema = getMockSchema(blockName);
-    if (mockSchema) {
-      return mockSchema;
+    const schemaUrl = `${ctx.edsDomainUrl}/blocks/${blockName}/${blockName}.schema.json`;
+    console.log(`Fetching schema from: ${schemaUrl}`);
+
+    const response = await fetch(schemaUrl);
+    if (response.ok) {
+      const schema = await response.json();
+      console.log(`Successfully loaded schema for block: ${blockName}`);
+      return schema as BlockSchema;
+    } else {
+      console.warn(`Schema not found for block ${blockName} at ${schemaUrl} (${response.status})`);
+      return null;
     }
-
-    // In production, this would be:
-    // const schemaUrl = `${context.edsDomainUrl}/blocks/${blockName}/${blockName}.schema.json`;
-    // const response = await fetch(schemaUrl);
-    // if (response.ok) {
-    //   return await response.json();
-    // }
-
-    return null;
   } catch (error) {
     console.warn(`Failed to fetch schema for block ${blockName}:`, error);
     return null;
   }
 }
 
-
-
 /**
- * Extract value using schema selector and property definition.
- * @param {Element} blockNode - The block node to extract the value from
- * @param {any} propertySchema - The property schema to extract the value from
- * @returns {any} - The extracted value or null if the value is not found
+ * Extract value from an element using attribute name or text content.
  */
-function extractSchemaValue(blockNode: Element, propertySchema: any): any {
-  if (propertySchema.type === 'array') {
-    // Handle array types - extract from multiple elements
-    const selector = propertySchema['x-eds-selector'];
-    if (!selector) return null;
-
-    const elements = selectAll(selector, blockNode) as Element[];
-    if (elements.length === 0) return null;
-
-    const itemSchema = propertySchema.items;
-    if (!itemSchema) return null;
-
-    const results = elements.map(element => {
-      if (itemSchema.type === 'object') {
-        // Extract object from each element using recursive processing
-        const result: any = {};
-        for (const [propName, propDef] of Object.entries(itemSchema.properties || {})) {
-          const propDefinition = propDef as any;
-
-          // Check if this property is itself a nested object or array
-          if (propDefinition.type === 'object' || propDefinition.type === 'array') {
-            // Recursively process nested structures within the array item context
-            const nestedValue = extractSchemaValue(element, propDefinition);
-            if (nestedValue !== null) {
-              result[propName] = nestedValue;
-            }
-          } else {
-            // Handle simple string/attribute extraction
-            const propSelector = propDefinition['x-eds-selector'];
-            const attributeName = propDefinition['x-eds-attribute'] || 'text';
-            let value: string = '';
-
-            if (propSelector) {
-              // Property has its own selector - use it within this element's context
-              const targetElement = select(propSelector, element) as Element;
-              if (targetElement) {
-                if (attributeName === 'text') {
-                  value = getText(targetElement).trim();
-                } else if (targetElement.properties?.[attributeName]) {
-                  value = targetElement.properties[attributeName] as string;
-                } else {
-                  value = getText(targetElement).trim();
-                }
-              }
-            } else {
-              // No selector - extract from current element
-              if (attributeName === 'text') {
-                value = getText(element).trim();
-              } else if (element.properties?.[attributeName]) {
-                value = element.properties[attributeName] as string;
-              } else {
-                value = getText(element).trim();
-              }
-            }
-
-            if (value) {
-              result[propName] = value;
-            }
-          }
-        }
-        return Object.keys(result).length ? result : null;
-      } else if (itemSchema.type === 'string') {
-        // Extract string from each element
-        const attributeName = itemSchema['x-eds-attribute'] || 'text';
-
-        if (attributeName === 'text') {
-          return getText(element).trim() || null;
-        } else if (element.properties?.[attributeName]) {
-          return element.properties[attributeName] as string || null;
-        }
-        return null;
-      }
-      return null;
-    }).filter(Boolean);
-
-    return results.length > 0 ? results : null;
-  } else if (propertySchema.type === 'object') {
-    // Handle object types (like image, cta)
-    const result: any = {};
-    const objectSelector = propertySchema['x-eds-selector'];
-    let sharedElement: Element | null = null;
-
-    // If object has a selector, find the shared element once
-    if (objectSelector) {
-      sharedElement = select(objectSelector, blockNode) as Element;
-    }
-
-    for (const [propName, propDef] of Object.entries(propertySchema.properties || {})) {
-      const propDefinition = propDef as any;
-
-      // Check if this property is itself an object or array that needs recursive processing
-      if (propDefinition.type === 'object' || propDefinition.type === 'array') {
-        // Recursively process nested objects/arrays
-        const nestedValue = extractSchemaValue(blockNode, propDefinition);
-        if (nestedValue !== null) {
-          result[propName] = nestedValue;
-        }
-      } else {
-        // Handle simple string/attribute extraction
-        let value: string = '';
-
-        // Check if property has its own selector
-        const propSelector = propDefinition['x-eds-selector'];
-        const attributeName = propDefinition['x-eds-attribute'] || propName;
-        let element: Element | null = null;
-
-        if (propSelector) {
-          // Property has its own selector
-          element = select(propSelector, blockNode) as Element;
-        } else if (sharedElement) {
-          // Inherit parent object's element
-          element = sharedElement;
-        }
-
-        if (element) {
-          // Try to extract as attribute first, fallback to text content
-          if (attributeName === 'text') {
-            value = getText(element).trim();
-          } else if (element.properties?.[attributeName]) {
-            value = element.properties[attributeName] as string;
-          } else {
-            // Fallback to text content if attribute doesn't exist
-            value = getText(element).trim();
-          }
-
-          if (value) {
-            result[propName] = value;
-          }
-        }
-      }
-    }
-    return Object.keys(result).length ? result : null;
-  } else if (propertySchema.type === 'string') {
-    // Handle string types
-    const selector = propertySchema['x-eds-selector'];
-    if (!selector) return null;
-
-    const attributeName = propertySchema['x-eds-attribute'] || 'text';
-
-    const element = select(selector, blockNode) as Element;
-    if (!element) return null;
-
-    if (attributeName === 'text') {
-      return getText(element).trim() || null;
-    } else if (element.properties?.[attributeName]) {
-      return element.properties[attributeName] as string || null;
-    }
-
-    return null;
+function extractValueFromElement(element: Element, attributeName: string): string {
+  if (attributeName === SCHEMA_CONSTANTS.TEXT) {
+    return getText(element).trim();
   }
 
-  return null;
+  if (element.properties?.[attributeName]) {
+    return element.properties[attributeName] as string;
+  }
+
+  // Fallback to text content if attribute doesn't exist
+  return getText(element).trim();
 }
 
 /**
- * Apply schema to extract structured data from block.
- * @param {Element} blockNode - The block node to extract the value from
- * @param {any} schema - The schema to apply to the block node
- * @param {string} blockName - The name of the block to apply the schema to
- * @returns {any} - The extracted value or null if the value is not found
+ * Find element using selector within context, with fallback to shared element.
  */
-export function applyBlockSchema(blockNode: Element, schema: any, blockName: string): any {
-  if (!schema || !schema.properties) return null;
+function findElement(
+  contextNode: Element,
+  selector?: string,
+  sharedElement?: Element | null
+): Element | null {
+  if (selector) {
+    return select(selector, contextNode) as Element || null;
+  }
 
-  const data: any = {};
+  return sharedElement || null;
+}
 
-  for (const [propertyName, propertySchema] of Object.entries(schema.properties)) {
-    const value = extractSchemaValue(blockNode, propertySchema);
+/**
+ * Extract string value according to schema property definition.
+ */
+function extractStringValue(
+  contextNode: Element,
+  property: StringSchemaProperty,
+  sharedElement?: Element | null,
+  propertyName?: string
+): string | null {
+  const selector = property[SCHEMA_CONSTANTS.SELECTOR];
+
+  // Find the element to extract from
+  const element = findElement(contextNode, selector, sharedElement);
+  if (!element) {
+    // If no element found via selector/shared, use contextNode directly (for array items)
+    if (!selector && !sharedElement) {
+      // Default to property name for attribute extraction, fallback to 'text'
+      const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
+      console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, contextNode.properties);
+      const value = extractValueFromElement(contextNode, attributeName);
+      return value || null;
+    }
+    return null;
+  }
+
+  // Default to property name for attribute extraction, fallback to 'text'
+  const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
+  console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, element.properties);
+  const value = extractValueFromElement(element, attributeName);
+
+  return value || null;
+}
+
+/**
+ * Extract array values according to schema property definition.
+ */
+function extractArrayValue(
+  contextNode: Element,
+  property: ArraySchemaProperty
+): unknown[] | null {
+  const selector = property[SCHEMA_CONSTANTS.SELECTOR];
+  if (!selector || !property.items) {
+    return null;
+  }
+
+  const elements = selectAll(selector, contextNode) as Element[];
+  console.log(`Array selector "${selector}" found ${elements.length} elements in`, contextNode.tagName);
+  if (elements.length === 0) {
+    return null;
+  }
+
+  const results = elements
+    .map((element, index) => {
+      console.log(`Processing array item ${index}:`, element.tagName, element.properties);
+      const result = extractSchemaValue(element, property.items!, null);
+      console.log(`Array item ${index} result:`, result);
+      return result;
+    })
+    .filter(Boolean);
+
+  return results.length > 0 ? results : null;
+}
+
+/**
+ * Extract object values according to schema property definition.
+ */
+function extractObjectValue(
+  contextNode: Element,
+  property: ObjectSchemaProperty
+): Record<string, unknown> | null {
+  if (!property.properties) {
+    return null;
+  }
+
+  const result: Record<string, unknown> = {};
+  const objectSelector = property[SCHEMA_CONSTANTS.SELECTOR];
+  let sharedElement: Element | null = null;
+
+  // Find shared element once if object has a selector
+  if (objectSelector) {
+    sharedElement = select(objectSelector, contextNode) as Element || null;
+  }
+
+  for (const [propName, propSchema] of Object.entries(property.properties)) {
+    // Use sharedElement as context if available, otherwise use original context
+    const extractionContext = sharedElement || contextNode;
+    const value = extractSchemaValue(extractionContext, propSchema, sharedElement, propName);
     if (value !== null) {
-      data[propertyName] = value;
+      result[propName] = value;
     }
   }
 
-  return data;
+  return Object.keys(result).length > 0 ? result : null;
+}
+
+/**
+ * Extract value using schema selector and property definition.
+ * Main recursive function that delegates to type-specific handlers.
+ */
+function extractSchemaValue(
+  contextNode: Element,
+  property: SchemaProperty,
+  sharedElement?: Element | null,
+  propertyName?: string
+): unknown | null {
+  // Input validation
+  if (!contextNode || !property || !property.type) {
+    return null;
+  }
+
+  const propertyType = property.type;
+
+  switch (propertyType) {
+    case SCHEMA_CONSTANTS.TYPES.STRING:
+      return extractStringValue(contextNode, property as StringSchemaProperty, sharedElement, propertyName);
+
+    case SCHEMA_CONSTANTS.TYPES.ARRAY:
+      return extractArrayValue(contextNode, property as ArraySchemaProperty);
+
+    case SCHEMA_CONSTANTS.TYPES.OBJECT:
+      return extractObjectValue(contextNode, property as ObjectSchemaProperty);
+
+    default:
+      console.warn(`Unsupported schema type: ${propertyType}`);
+      return null;
+  }
+}
+
+/**
+ * Extract structured data from block using schema.
+ */
+export function extractBlockWithSchema(
+  blockNode: Element,
+  schema: BlockSchema,
+  blockName: string
+): Record<string, unknown> | null {
+  // Input validation
+  if (!blockNode || !schema || !schema.properties) {
+    console.warn(`Invalid input for extractBlockWithSchema: blockName=${blockName}`);
+    return null;
+  }
+
+  const data: Record<string, unknown> = {};
+
+  for (const [propertyName, propertySchema] of Object.entries(schema.properties)) {
+    try {
+      const value = extractSchemaValue(blockNode, propertySchema, null, propertyName);
+      if (value !== null) {
+        data[propertyName] = value;
+      }
+    } catch (error) {
+      console.warn(`Error extracting property ${propertyName} for block ${blockName}:`, error);
+      // Continue processing other properties
+    }
+  }
+
+  return Object.keys(data).length > 0 ? data : null;
 } 
