@@ -14,6 +14,7 @@ import { remove } from 'unist-util-remove';
 import { whitespace } from 'hast-util-whitespace';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
+import { Ctx } from './context';
 
 /**
  * Extract section metadata from a <div class="section-metadata">.
@@ -42,7 +43,7 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
  * @param {any} mainNode
  * @returns {Array<{metadata?: Record<string, string>, section: any[]}>}
  */
-export function extractMain(mainNode: Element, compact: boolean = false): Array<{ metadata?: Record<string, string>, section: any[] }> {
+export function extractMain(mainNode: Element, ctx: Ctx): Array<{ metadata?: Record<string, string>, section: any[] }> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes
@@ -58,7 +59,7 @@ export function extractMain(mainNode: Element, compact: boolean = false): Array<
           !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
         )
         .flatMap((child: any) => {
-          const result = extractContentElement(child, compact);
+          const result = extractContentElement(child, ctx.compact);
           return Array.isArray(result) ? result : [result];
         })
         .filter(Boolean)
