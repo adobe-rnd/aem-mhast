@@ -21,6 +21,95 @@ export const MOCK_SCHEMAS = {
     "description": "Main hero section with image and title",
     "type": "object",
     "properties": {
+      "title": {
+        "type": "string",
+        "description": "Main hero title",
+        "x-eds-selector": "h1"
+      },
+      "image": {
+        "type": "object",
+        "x-eds-selector": "picture img",
+        "properties": {
+          "src": {
+            "type": "string",
+            "format": "uri"
+          },
+          "alt": {
+            "type": "string"
+          }
+        },
+        "required": ["src", "alt"]
+      }
+    },
+    "required": ["image", "title"]
+  },
+  cards: {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Cards Block",
+    "description": "Collection of cards with images and content",
+    "type": "object",
+    "properties": {
+      "cards": {
+        "type": "array",
+        "description": "Array of card items",
+        "x-eds-selector": ":scope > div",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Card title from strong text",
+              "x-eds-selector": "strong"
+            },
+            "description": {
+              "type": "string",
+              "description": "Card description from second paragraph",
+              "x-eds-selector": "p:last-child"
+            },
+            "image": {
+              "type": "object",
+              "x-eds-selector": "picture img",
+              "properties": {
+                "src": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "alt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "required": ["cards"]
+  },
+  fragment: {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Fragment Block",
+    "description": "Fragment inclusion block with reference URLs",
+    "type": "object",
+    "properties": {
+      "url": {
+        "type": "string",
+        "format": "uri",
+        "x-eds-selector": "a",
+        "x-eds-attribute": "href"
+      },
+      "text": {
+        "type": "string",
+        "x-eds-selector": "a"
+      }
+    },
+    "required": ["links"]
+  },
+  hero_demo: {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Hero Block",
+    "description": "Main hero section with image and title",
+    "type": "object",
+    "properties": {
       "image": {
         "type": "object",
         "x-eds-selector": "picture img",
@@ -140,7 +229,7 @@ export const MOCK_SCHEMAS = {
       }
     },
     "required": ["image", "title"]
-  }
+  },
 };
 
 /**

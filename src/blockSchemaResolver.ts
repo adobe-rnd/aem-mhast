@@ -66,23 +66,50 @@ function extractSchemaValue(blockNode: Element, propertySchema: any): any {
 
     const results = elements.map(element => {
       if (itemSchema.type === 'object') {
-        // Extract object from each element
+        // Extract object from each element using recursive processing
         const result: any = {};
         for (const [propName, propDef] of Object.entries(itemSchema.properties || {})) {
           const propDefinition = propDef as any;
-          const attributeName = propDefinition['x-eds-attribute'] || propName;
-          let value: string = '';
 
-          if (attributeName === 'text') {
-            value = getText(element).trim();
-          } else if (element.properties?.[attributeName]) {
-            value = element.properties[attributeName] as string;
+          // Check if this property is itself a nested object or array
+          if (propDefinition.type === 'object' || propDefinition.type === 'array') {
+            // Recursively process nested structures within the array item context
+            const nestedValue = extractSchemaValue(element, propDefinition);
+            if (nestedValue !== null) {
+              result[propName] = nestedValue;
+            }
           } else {
-            value = getText(element).trim();
-          }
+            // Handle simple string/attribute extraction
+            const propSelector = propDefinition['x-eds-selector'];
+            const attributeName = propDefinition['x-eds-attribute'] || 'text';
+            let value: string = '';
 
-          if (value) {
-            result[propName] = value;
+            if (propSelector) {
+              // Property has its own selector - use it within this element's context
+              const targetElement = select(propSelector, element) as Element;
+              if (targetElement) {
+                if (attributeName === 'text') {
+                  value = getText(targetElement).trim();
+                } else if (targetElement.properties?.[attributeName]) {
+                  value = targetElement.properties[attributeName] as string;
+                } else {
+                  value = getText(targetElement).trim();
+                }
+              }
+            } else {
+              // No selector - extract from current element
+              if (attributeName === 'text') {
+                value = getText(element).trim();
+              } else if (element.properties?.[attributeName]) {
+                value = element.properties[attributeName] as string;
+              } else {
+                value = getText(element).trim();
+              }
+            }
+
+            if (value) {
+              result[propName] = value;
+            }
           }
         }
         return Object.keys(result).length ? result : null;
