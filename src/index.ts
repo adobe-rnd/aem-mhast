@@ -14,29 +14,13 @@ import { extractHead } from './extractHead';
 import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
+import { getCtx } from './context.js';
 
 export default {
 	async fetch(request: Request): Promise<Response> {
 		try {
-			const url = new URL(request.url);
-			// Expect path: /org/site/path/to/page
-			const [, org, site, ...rest] = url.pathname.split('/');
-			if (!org || !site) {
-				return new Response('Usage: /org/site/path', { status: 400 });
-			}
-
-			const contentPath = rest.join('/') || '';
-			const context = {
-				org,
-				site,
-				edsDomainUrl: `https://main--${site}--${org}.aem.live`,
-				contentPath: contentPath
-			};
-
-			const compact = url.searchParams.get('compact') === 'true';
-			const includeHead = url.searchParams.get('head') !== 'false';
-
-			const edsContentUrl = `${context.edsDomainUrl}/${context.contentPath}`;
+			const ctx = getCtx(request.url);
+			const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
 			const edsResp = await fetch(edsContentUrl);
 			if (!edsResp.ok) {
 				return new Response(`Failed to fetch EDS page: ${edsContentUrl}`, { status: edsResp.status });
@@ -50,8 +34,8 @@ export default {
 			const headNode = select('head', htmlNode) as Element;
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
-				metadata: includeHead ? extractHead(headNode) : undefined,
-				content: await extractMain(mainNode, context, compact),
+				metadata: ctx.includeHead ? extractHead(headNode) : undefined,
+				content: await extractMain(mainNode, ctx),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },

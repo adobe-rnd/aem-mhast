@@ -14,6 +14,7 @@ import { toHtml } from 'hast-util-to-html';
 import { getText, isBlockDiv } from './utils';
 import { Element } from 'hast';
 import { fetchBlockSchema, applyBlockSchema } from './blockSchemaResolver';
+import { Ctx } from './context';
 
 /**
  * Extract block options from className.
@@ -31,14 +32,14 @@ export function extractBlockOptions(classNameArr: string[] | undefined, blockNam
  * @param {object} listNode
  * @returns {Promise<Array<any>>}
  */
-export async function extractListItems(listNode: Element): Promise<any[]> {
+export async function extractListItems(listNode: Element, ctx: Ctx): Promise<any[]> {
   const items = await Promise.all(
     (listNode.children || [])
       .filter((child: any) => child.type === 'element' && child.tagName === 'li')
       .map(async (li: any) => {
         // Extract all content from the <li>
         const items = await Promise.all(
-          (li.children || []).map((child: any) => extractContentElement(child, false, null))
+          (li.children || []).map((child: any) => extractContentElement(child, ctx))
         );
         const flatItems = items.flatMap((x: any) => Array.isArray(x) ? x : [x]).filter(Boolean);
 
@@ -58,19 +59,18 @@ export async function extractListItems(listNode: Element): Promise<any[]> {
 
 /**
  * Main content extraction dispatcher.
- * @param {object} node
- * @param {boolean} compact
- * @param {any} context
+ * @param {object} node - The node to extract content from
+ * @param {Ctx} ctx - The context object containing the organization, site, and compact flag
  * @returns {Promise<object|Array<any>|null>}
  */
-export async function extractContentElement(node: any, compact: boolean = false, context: any = null): Promise<any> {
+export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
   if (node.type === 'text') return { type: "text", text: getText(node) };
   if (!node || node.type !== 'element') return null;
 
   const { tagName, properties = {} } = node;
   const type = tagName === 'p' ? 'paragraph' : tagName;
 
-  if (compact && tagName !== 'div') {
+  if (ctx.compact && tagName !== 'div') {
     return {
       type,
       content: toHtml(node)
@@ -101,7 +101,7 @@ export async function extractContentElement(node: any, compact: boolean = false,
           return text && text.trim() ? text : null;
         }
         // If element, recursively extract
-        const extracted = await extractContentElement(child, compact, context);
+        const extracted = await extractContentElement(child, ctx);
         if (Array.isArray(extracted)) {
           return extracted;
         }
@@ -137,7 +137,7 @@ export async function extractContentElement(node: any, compact: boolean = false,
     return {
       type: 'list',
       ordered: tagName === 'ol',
-      items: await extractListItems(node)
+      items: await extractListItems(node, ctx)
     };
   }
 
@@ -176,9 +176,9 @@ export async function extractContentElement(node: any, compact: boolean = false,
 
     // Try to fetch schema first
     let schema = null;
-    if (context) {
+    if (ctx) {
       try {
-        schema = await fetchBlockSchema(name, context);
+        schema = await fetchBlockSchema(name, ctx);
       } catch (error) {
         console.warn(`Error fetching schema for block ${name}:`, error);
       }
@@ -195,7 +195,7 @@ export async function extractContentElement(node: any, compact: boolean = false,
     } else {
       // No schema available - use legacy processing (fallback)
       const contentElement = await Promise.all(
-        (node.children || []).map((child: any) => extractContentElement(child, compact, context))
+        (node.children || []).map((child: any) => extractContentElement(child, ctx))
       );
       blockContent = contentElement.filter(Boolean);
     }
@@ -215,7 +215,7 @@ export async function extractContentElement(node: any, compact: boolean = false,
   // For non-block <div>, recursively extract their children (flatten)
   if (tagName === 'div') {
     const children = await Promise.all(
-      (node.children || []).map((child: any) => extractContentElement(child, compact, context))
+      (node.children || []).map((child: any) => extractContentElement(child, ctx))
     );
     return children.filter(Boolean);
   }

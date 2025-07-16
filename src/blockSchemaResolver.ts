@@ -14,14 +14,15 @@ import { Element } from 'hast';
 import { select, selectAll } from 'hast-util-select';
 import { getText } from './utils';
 import { getMockSchema } from './mockSchemas';
+import { Ctx } from './context';
 
 /**
  * Fetch block schema from EDS domain or return mock schema for testing.
- * @param {string} blockName
- * @param {any} context
- * @returns {Promise<any|null>}
+ * @param {string} blockName - The name of the block to fetch the schema for
+ * @param {Ctx} ctx - The context object containing the organization, site, and compact flag
+ * @returns {Promise<any|null>} - The block schema or null if the schema is not found
  */
-export async function fetchBlockSchema(blockName: string, context: any): Promise<any | null> {
+export async function fetchBlockSchema(blockName: string, ctx: Ctx): Promise<any | null> {
   try {
     // For now, return mock schema for testing
     const mockSchema = getMockSchema(blockName);
@@ -47,9 +48,9 @@ export async function fetchBlockSchema(blockName: string, context: any): Promise
 
 /**
  * Extract value using schema selector and property definition.
- * @param {Element} blockNode
- * @param {any} propertySchema
- * @returns {any}
+ * @param {Element} blockNode - The block node to extract the value from
+ * @param {any} propertySchema - The property schema to extract the value from
+ * @returns {any} - The extracted value or null if the value is not found
  */
 function extractSchemaValue(blockNode: Element, propertySchema: any): any {
   if (propertySchema.type === 'array') {
@@ -180,10 +181,10 @@ function extractSchemaValue(blockNode: Element, propertySchema: any): any {
 
 /**
  * Apply schema to extract structured data from block.
- * @param {Element} blockNode
- * @param {any} schema
- * @param {string} blockName
- * @returns {any}
+ * @param {Element} blockNode - The block node to extract the value from
+ * @param {any} schema - The schema to apply to the block node
+ * @param {string} blockName - The name of the block to apply the schema to
+ * @returns {any} - The extracted value or null if the value is not found
  */
 export function applyBlockSchema(blockNode: Element, schema: any, blockName: string): any {
   if (!schema || !schema.properties) return null;
