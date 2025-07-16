@@ -42,7 +42,7 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
  * @param {any} mainNode
  * @returns {Array<{metadata?: Record<string, string>, section: any[]}>}
  */
-export function extractMain(mainNode: Element, compact: boolean = false): Array<{metadata?: Record<string, string>, section: any[]}> {
+export function extractMain(mainNode: Element, compact: boolean = false): Array<{ metadata?: Record<string, string>, section: any[] }> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes
