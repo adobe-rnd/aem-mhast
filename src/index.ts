@@ -25,14 +25,21 @@ export default {
 				return new Response('Usage: /org/site/path', { status: 400 });
 			}
 
+			const contentPath = rest.join('/') || '';
+			const context = {
+				org,
+				site,
+				edsDomainUrl: `https://main--${site}--${org}.aem.live`,
+				contentPath: contentPath
+			};
+
 			const compact = url.searchParams.get('compact') === 'true';
 			const includeHead = url.searchParams.get('head') !== 'false';
 
-			const edsPath = rest.join('/') || '';
-			const edsUrl = `https://main--${site}--${org}.aem.live/${edsPath}`;
-			const edsResp = await fetch(edsUrl);
+			const edsContentUrl = `${context.edsDomainUrl}/${context.contentPath}`;
+			const edsResp = await fetch(edsContentUrl);
 			if (!edsResp.ok) {
-				return new Response(`Failed to fetch EDS page: ${edsUrl}`, { status: edsResp.status });
+				return new Response(`Failed to fetch EDS page: ${edsContentUrl}`, { status: edsResp.status });
 			}
 
 			const html = await edsResp.text();
@@ -44,7 +51,7 @@ export default {
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
 				metadata: includeHead ? extractHead(headNode) : undefined,
-				content: extractMain(mainNode, compact),
+				content: extractMain(mainNode, context, compact),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },
