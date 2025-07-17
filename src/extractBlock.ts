@@ -25,7 +25,7 @@ function extractBlockOptions(classNameArr: string[] | undefined, blockName: stri
 	return classNameArr.filter((cls) => cls !== blockName);
 }
 
-export async function extractBlock(node: any, ctx: Ctx): Promise<{ metadata?: Record<string, string>; section: any[] }> {
+export async function extractBlock(node: any, ctx: Ctx): Promise<{ options?: Record<string, string>; content: any[] }> {
 	const { properties = {} } = node;
 	const name = properties.className[0];
 	const options = extractBlockOptions(properties.className, name);
