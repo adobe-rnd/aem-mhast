@@ -15,7 +15,7 @@ export type Ctx = {
 	site: string;
 	edsDomainUrl: string;
 	contentPath: string;
-    useSchema: boolean;
+	useSchema: boolean;
 	compact: boolean;
 	includeHead: boolean;
 };
@@ -26,9 +26,9 @@ export function getCtx(url: string): Ctx {
 	if (!org || !site) {
 		throw new Error('Usage: /org/site/path');
 	}
-    const compact = urlObj.searchParams.get('compact') === 'true';
-    const includeHead = urlObj.searchParams.get('head') !== 'false';
-    const useSchema = urlObj.searchParams.get('schema') === 'true';
+	const compact = urlObj.searchParams.get('compact') === 'true';
+	const includeHead = urlObj.searchParams.get('head') !== 'false';
+	const useSchema = urlObj.searchParams.get('schema') === 'true';
 
 	return {
 		org,
@@ -37,6 +37,6 @@ export function getCtx(url: string): Ctx {
 		contentPath: rest.join('/') || '',
 		compact,
 		includeHead,
-        useSchema
+		useSchema
 	}
 }
