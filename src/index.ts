@@ -20,7 +20,6 @@ export default {
 	async fetch(request: Request): Promise<Response> {
 		try {
 			const ctx = getCtx(request.url);
-
 			const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
 			const edsResp = await fetch(edsContentUrl);
 			if (!edsResp.ok) {
@@ -36,7 +35,7 @@ export default {
 			const mainNode = select('main', htmlNode) as Element;
 			const json = {
 				metadata: ctx.includeHead ? extractHead(headNode) : undefined,
-				content: extractMain(mainNode, ctx),
+				content: await extractMain(mainNode, ctx),
 			};
 			return new Response(JSON.stringify(json, null, 2), {
 				headers: { 'content-type': 'application/json' },
