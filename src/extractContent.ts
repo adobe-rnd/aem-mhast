@@ -176,7 +176,7 @@ export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
 
     // Try to fetch schema first
     let schema = null;
-    if (ctx) {
+    if (ctx && ctx.useSchema) {
       try {
         schema = await fetchBlockSchema(name, ctx);
       } catch (error) {

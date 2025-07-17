@@ -15,6 +15,7 @@ export type Ctx = {
 	site: string;
 	edsDomainUrl: string;
 	contentPath: string;
+    useSchema: boolean;
 	compact: boolean;
 	includeHead: boolean;
 };
@@ -27,12 +28,15 @@ export function getCtx(url: string): Ctx {
 	}
     const compact = urlObj.searchParams.get('compact') === 'true';
     const includeHead = urlObj.searchParams.get('head') !== 'false';
+    const useSchema = urlObj.searchParams.get('schema') === 'true';
+
 	return {
 		org,
 		site,
 		edsDomainUrl: `https://main--${site}--${org}.aem.live`,
 		contentPath: rest.join('/') || '',
 		compact,
-		includeHead
+		includeHead,
+        useSchema
 	}
 }
