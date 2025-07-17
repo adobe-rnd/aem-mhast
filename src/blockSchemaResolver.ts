@@ -68,12 +68,10 @@ interface BlockSchema {
 export async function fetchBlockSchema(blockName: string, ctx: Ctx): Promise<BlockSchema | null> {
   try {
     const schemaUrl = `${ctx.edsDomainUrl}/blocks/${blockName}/${blockName}.schema.json`;
-    console.log(`Fetching schema from: ${schemaUrl}`);
 
     const response = await fetch(schemaUrl);
     if (response.ok) {
       const schema = await response.json();
-      console.log(`Successfully loaded schema for block: ${blockName}`);
       return schema as BlockSchema;
     } else {
       console.warn(`Schema not found for block ${blockName} at ${schemaUrl} (${response.status})`);
@@ -134,7 +132,7 @@ function extractStringValue(
     if (!selector && !sharedElement) {
       // Default to property name for attribute extraction, fallback to 'text'
       const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
-      console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, contextNode.properties);
+      //console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, contextNode.properties);
       const value = extractValueFromElement(contextNode, attributeName);
       return value || null;
     }
@@ -143,7 +141,7 @@ function extractStringValue(
 
   // Default to property name for attribute extraction, fallback to 'text'
   const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
-  console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, element.properties);
+  //console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, element.properties);
   const value = extractValueFromElement(element, attributeName);
 
   return value || null;
@@ -162,16 +160,16 @@ function extractArrayValue(
   }
 
   const elements = selectAll(selector, contextNode) as Element[];
-  console.log(`Array selector "${selector}" found ${elements.length} elements in`, contextNode.tagName);
+  //console.log(`Array selector "${selector}" found ${elements.length} elements in`, contextNode.tagName);
   if (elements.length === 0) {
     return null;
   }
 
   const results = elements
     .map((element, index) => {
-      console.log(`Processing array item ${index}:`, element.tagName, element.properties);
+      //console.log(`Processing array item ${index}:`, element.tagName, element.properties);
       const result = extractSchemaValue(element, property.items!, null);
-      console.log(`Array item ${index} result:`, result);
+      //console.log(`Array item ${index} result:`, result);
       return result;
     })
     .filter(Boolean);
