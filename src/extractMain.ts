@@ -15,6 +15,8 @@ import { whitespace } from 'hast-util-whitespace';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
 import { Ctx } from './context';
+import { isBlockDiv } from './utils';
+import { extractBlock } from './extractBlock';
 
 /**
  * Extract section metadata from a <div class="section-metadata">.
@@ -36,6 +38,22 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
     }
   });
   return Object.keys(meta).length ? meta : undefined;
+}
+
+/**
+ * Extracts the content of a section node, dispatching to block or content extraction as appropriate.
+ * If the node is a block div, it uses extractBlock; otherwise, it uses extractContentElement.
+ * @param {Element} node - The section node to extract.
+ * @param {Ctx} ctx - The extraction context.
+ * @returns {Promise<any>} The extracted section content.
+ */
+async function extractSection(node: Element, ctx: Ctx): Promise<any> {
+  if (!node || node.type !== 'element') return null;
+  if (isBlockDiv(node)) {
+    return extractBlock(node, ctx);
+  } else {
+    return extractContentElement(node, ctx);
+  }
 }
 
 /**
@@ -62,7 +80,7 @@ export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ 
               !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
             )
             .map(async (child: any) => {
-              const result = await extractContentElement(child, ctx);
+              const result = await extractSection(child, ctx);
               return Array.isArray(result) ? result : [result];
             })
         );
