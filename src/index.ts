@@ -19,6 +19,10 @@ import { getCtx } from './context.js';
 export default {
 	async fetch(request: Request): Promise<Response> {
 		try {
+			if (new URL(request.url).pathname === '/favicon.ico') {
+				return new Response('', { status: 404 });
+			}
+
 			const ctx = getCtx(request.url);
 			const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
 			const edsResp = await fetch(edsContentUrl);

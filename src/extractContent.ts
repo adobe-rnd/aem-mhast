@@ -47,7 +47,7 @@ export function extractListItems(listNode: Element): any[] {
  * @returns {object|Array<any>|null}
  */
 export function extractContentElement(node: any, ctx: Ctx): any {
-  if (node.type === 'text') return {type: "text", text: getText(node)};
+  if (node.type === 'text') return { type: "text", text: getText(node) };
   if (!node || node.type !== 'element') return null;
   
   const { tagName, properties = {} } = node;
@@ -85,7 +85,7 @@ export function extractContentElement(node: any, ctx: Ctx): any {
           return text && text.trim() ? text : null;
         }
         // If element, recursively extract
-        const extracted = extractContentElement(child, compact);
+        const extracted = extractContentElement(child, ctx);
         if (Array.isArray(extracted)) {
           return extracted;
         }
