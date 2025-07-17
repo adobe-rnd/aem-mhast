@@ -132,7 +132,6 @@ function extractStringValue(
     if (!selector && !sharedElement) {
       // Default to property name for attribute extraction, fallback to 'text'
       const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
-      //console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, contextNode.properties);
       const value = extractValueFromElement(contextNode, attributeName);
       return value || null;
     }
@@ -141,7 +140,6 @@ function extractStringValue(
 
   // Default to property name for attribute extraction, fallback to 'text'
   const attributeName = property[SCHEMA_CONSTANTS.ATTRIBUTE] || propertyName || SCHEMA_CONSTANTS.TEXT;
-  //console.log(`Extracting string: property="${propertyName}", attribute="${attributeName}", available properties:`, element.properties);
   const value = extractValueFromElement(element, attributeName);
 
   return value || null;
@@ -160,16 +158,13 @@ function extractArrayValue(
   }
 
   const elements = selectAll(selector, contextNode) as Element[];
-  //console.log(`Array selector "${selector}" found ${elements.length} elements in`, contextNode.tagName);
   if (elements.length === 0) {
     return null;
   }
 
   const results = elements
     .map((element, index) => {
-      //console.log(`Processing array item ${index}:`, element.tagName, element.properties);
       const result = extractSchemaValue(element, property.items!, null);
-      //console.log(`Array item ${index} result:`, result);
       return result;
     })
     .filter(Boolean);
