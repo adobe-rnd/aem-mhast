@@ -11,66 +11,50 @@
  */
 
 import { toHtml } from 'hast-util-to-html';
-import { getText, isBlockDiv } from './utils';
+import { getText } from './utils';
 import { Element } from 'hast';
-import { fetchBlockSchema, extractBlockWithSchema } from './blockSchemaResolver';
 import { Ctx } from './context';
-
-/**
- * Extract block options from className.
- * @param {Array<string>} classNameArr
- * @param {string} blockName
- * @returns {Array<string>}
- */
-export function extractBlockOptions(classNameArr: string[] | undefined, blockName: string): string[] {
-  if (!classNameArr) return [];
-  return classNameArr.filter(cls => cls !== blockName);
-}
 
 /**
  * Extract list items recursively, preserving structure.
  * @param {object} listNode
- * @returns {Promise<Array<any>>}
+ * @returns {Array<any>}
  */
-export async function extractListItems(listNode: Element, ctx: Ctx): Promise<any[]> {
-  const items = await Promise.all(
-    (listNode.children || [])
-      .filter((child: any) => child.type === 'element' && child.tagName === 'li')
-      .map(async (li: any) => {
-        // Extract all content from the <li>
-        const items = await Promise.all(
-          (li.children || []).map((child: any) => extractContentElement(child, ctx))
-        );
-        const flatItems = items.flatMap((x: any) => Array.isArray(x) ? x : [x]).filter(Boolean);
-
-        if (flatItems.length === 1 && typeof flatItems[0] === 'string') {
-          return flatItems[0];
-        } else if (flatItems.length === 1) {
-          return flatItems[0];
-        } else if (flatItems.length > 1) {
-          return flatItems;
-        } else {
-          return getText(li).trim();
-        }
-      })
-  );
-  return items;
+export function extractListItems(listNode: Element): any[] {
+  return (listNode.children || [])
+    .filter((child: any) => child.type === 'element' && child.tagName === 'li')
+    .map((li: any) => {
+      // Extract all content from the <li>
+      const items = (li.children || [])
+        .map(extractContentElement)
+        .flatMap((x: any) => Array.isArray(x) ? x : [x])
+        .filter(Boolean);
+      if (items.length === 1 && typeof items[0] === 'string') {
+        return items[0];
+      } else if (items.length === 1) {
+        return items[0];
+      } else if (items.length > 1) {
+        return items;
+      } else {
+        return getText(li).trim();
+      }
+    });
 }
 
 /**
  * Main content extraction dispatcher.
- * @param {object} node - The node to extract content from
- * @param {Ctx} ctx - The context object containing the organization, site, and compact flag
- * @returns {Promise<object|Array<any>|null>}
+ * @param {object} node
+ * @returns {object|Array<any>|null}
  */
-export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
-  if (node.type === 'text') return { type: "text", text: getText(node) };
+export function extractContentElement(node: any, ctx: Ctx): any {
+  if (node.type === 'text') return {type: "text", text: getText(node)};
   if (!node || node.type !== 'element') return null;
-
+  
   const { tagName, properties = {} } = node;
+  const { compact } = ctx;
   const type = tagName === 'p' ? 'paragraph' : tagName;
 
-  if (ctx.compact && tagName !== 'div') {
+  if (compact) {
     return {
       type,
       content: toHtml(node)
@@ -93,25 +77,26 @@ export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
       };
     }
 
-    const content = await Promise.all(
-      (node.children || []).map(async (child: any) => {
+    const content = (node.children || [])
+      .map((child: any) => {
         // If text node, return its text
         if (child.type === 'text') {
           const text = getText(child);
           return text && text.trim() ? text : null;
         }
         // If element, recursively extract
-        const extracted = await extractContentElement(child, ctx);
+        const extracted = extractContentElement(child, compact);
         if (Array.isArray(extracted)) {
           return extracted;
         }
         return extracted;
       })
-    );
+      .flat()
+      .filter(Boolean);
 
     return {
       type,
-      content: content.flat().filter(Boolean)
+      content
     };
   }
 
@@ -137,7 +122,7 @@ export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
     return {
       type: 'list',
       ordered: tagName === 'ol',
-      items: await extractListItems(node, ctx)
+      items: extractListItems(node)
     };
   }
 
@@ -168,56 +153,9 @@ export async function extractContentElement(node: any, ctx: Ctx): Promise<any> {
     }
   }
 
-  // Blocks: <div> with class (not section-metadata)
-  if (isBlockDiv(node)) {
-    const name = properties.className[0];
-    const options = extractBlockOptions(properties.className, name);
-    let blockContent: any = null;
-
-    // Try to fetch schema first
-    let schema = null;
-    if (ctx && ctx.useSchema) {
-      try {
-        schema = await fetchBlockSchema(name, ctx);
-      } catch (error) {
-        console.warn(`Error fetching schema for block ${name}:`, error);
-      }
-    }
-
-    if (schema) {
-      // Schema exists - apply it
-      try {
-        blockContent = extractBlockWithSchema(node, schema, name);
-      } catch (error) {
-        console.warn(`Error applying schema for block ${name}:`, error);
-        blockContent = {}; // Return empty data if schema application fails
-      }
-    } else {
-      // No schema available - use legacy processing (fallback)
-      const contentElement = await Promise.all(
-        (node.children || []).map((child: any) => extractContentElement(child, ctx))
-      );
-      blockContent = contentElement.filter(Boolean);
-    }
-
-    const result: any = {
-      type: 'block',
-      name,
-      content: blockContent
-    };
-    if (options.length > 0) {
-      result.options = options;
-    }
-
-    return result;
-  }
-
   // For non-block <div>, recursively extract their children (flatten)
   if (tagName === 'div') {
-    const children = await Promise.all(
-      (node.children || []).map((child: any) => extractContentElement(child, ctx))
-    );
-    return children.filter(Boolean);
+    return (node.children || []).map((child: any) => extractContentElement(child, ctx)).filter(Boolean);
   }
 
   // Fallback: unknown element
