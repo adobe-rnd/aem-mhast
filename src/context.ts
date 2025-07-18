@@ -18,6 +18,7 @@ export type Ctx = {
 	useSchema: boolean;
 	compact: boolean;
 	includeHead: boolean;
+    html: boolean;
 };
 
 export function getCtx(url: string): Ctx {
@@ -26,10 +27,10 @@ export function getCtx(url: string): Ctx {
 	if (!org || !site) {
 		throw new Error('Usage: /org/site/path');
 	}
-	const compact = urlObj.searchParams.get('compact') === 'true';
-	const includeHead = urlObj.searchParams.get('head') !== 'false';
+	const compact = urlObj.searchParams.get('compact') === 'true'; // TODO remove
+	const includeHead = urlObj.searchParams.get('head') !== 'false'; // TODO remove
 	const useSchema = urlObj.searchParams.get('schema') === 'true';
-
+	const html = urlObj.searchParams.get('html') === 'true';
 	return {
 		org,
 		site,
@@ -37,6 +38,7 @@ export function getCtx(url: string): Ctx {
 		contentPath: rest.join('/') || '',
 		compact,
 		includeHead,
-		useSchema
+		useSchema,
+		html
 	}
 }

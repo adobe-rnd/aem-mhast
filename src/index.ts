@@ -15,6 +15,7 @@ import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
 import { getCtx } from './context.js';
+import { addHtmlAttrToMainAndDiv, annotateHtml, cleanHead, cleanHtml } from './utils.js';
 
 export default {
 	async fetch(request: Request): Promise<Response> {
@@ -35,17 +36,32 @@ export default {
 			const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
 			if (!htmlNode) throw new Error('No <html> root found');
 
-			const headNode = select('head', htmlNode) as Element;
-			const mainNode = select('main', htmlNode) as Element;
-			const json = {
-				metadata: ctx.includeHead ? extractHead(headNode) : undefined,
-				content: await extractMain(mainNode, ctx),
-			};
-			return new Response(JSON.stringify(json, null, 2), {
+      cleanHtml(htmlNode);
+			cleanHead(select('head', htmlNode) as Element);
+
+      annotateHtml(htmlNode);
+			if (ctx.html) {
+				addHtmlAttrToMainAndDiv(htmlNode);
+      }
+
+			return new Response(JSON.stringify(htmlNode, null, 2), {
 				headers: { 'content-type': 'application/json' },
 			});
+
+			// const headNode = select('head', htmlNode) as Element;
+			// const mainNode = select('main', htmlNode) as Element;
+			// const json = {
+			// 	metadata: ctx.includeHead ? extractHead(headNode) : undefined,
+			// 	content: await extractMain(mainNode, ctx),
+			// };
+			// return new Response(JSON.stringify(json, null, 2), {
+			// 	headers: { 'content-type': 'application/json' },
+			// });
 		} catch (err: any) {
 			return new Response(`Error: ${err.message || err}`, { status: 500 });
 		}
 	},
 };
+
+
+
