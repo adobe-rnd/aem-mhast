@@ -15,7 +15,8 @@ import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
 import { getCtx } from './context.js';
-import { addHtmlAttrToMainAndDiv, annotateHtml, cleanHead, cleanHtml } from './utils.js';
+import { addHtmlAttrToMainAndDiv, cleanHead, cleanHtml } from './utils';
+import { annotateHtml } from "./annotation";
 
 export default {
 	async fetch(request: Request): Promise<Response> {
