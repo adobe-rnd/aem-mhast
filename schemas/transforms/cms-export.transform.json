@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CMS Export Transform",
+  "description": "Transform schema for CMS export format",
+  "type": "object",
+  "transforms": {
+    "page": {
+      "title": {
+        "$from": "hero.title"
+      },
+      "slug": {
+        "$from": "hero.title",
+        "$transform": "slugify"
+      },
+      "status": {
+        "$default": "published"
+      },
+      "featuredImage": {
+        "url": {
+          "$from": "hero.picture.src"
+        },
+        "alt": {
+          "$from": "hero.picture.alt"
+        },
+        "sources": {
+          "$from": "hero.picture.sources"
+        }
+      }
+    },
+    "blocks": [
+      {
+        "type": {
+          "$default": "hero"
+        },
+        "title": {
+          "$from": "hero.title"
+        },
+        "description": {
+          "$from": "hero.description"
+        },
+        "picture": {
+          "$from": "hero.picture"
+        },
+        "ctaLink": {
+          "$from": "hero.ctaLink"
+        }
+      },
+      {
+        "type": {
+          "$default": "cards"
+        },
+        "title": {
+          "$from": "cards.title"
+        },
+        "items": {
+          "$map": {
+            "from": "cards.items",
+            "transform": {
+              "title": "title",
+              "description": "description",
+              "picture": "picture",
+              "link": "link"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
