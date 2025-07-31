@@ -123,14 +123,23 @@ export class Extractor {
     for (const child of children) {
       // Check if it's a block (div with class)
       if (child.tagName === 'div' && child.properties?.className) {
-        const blockName = (child.properties.className as string[])[0];
+        const classNames = child.properties.className as string[];
+        const blockName = classNames[0];
+        const variantName = classNames[1]; // The second class is the variant
 
         if (SchemaResolver.isSupportedBlock(blockName)) {
-          const blockData = await this.extractBlock(child, blockName);
+          const blockData = await this.extractBlock(child, blockName, variantName);
           if (blockData) {
-            // Unwrapped format for blocks
+            const finalBlockObject: { option?: string, data: any } = {
+              data: blockData,
+            };
+
+            if (variantName) {
+              finalBlockObject.option = variantName;
+            }
+
             elements.push({
-              [blockName]: blockData
+              [blockName]: finalBlockObject,
             });
           }
         }
@@ -150,9 +159,9 @@ export class Extractor {
   /**
    * Extract a specific block using its schema
    */
-  private static async extractBlock(blockElement: Element, blockName: string): Promise<Record<string, unknown> | null> {
+  private static async extractBlock(blockElement: Element, blockName: string, variantName?: string): Promise<Record<string, unknown> | null> {
     try {
-      const schema = await SchemaResolver.loadBlockSchema(blockName);
+      const schema = await SchemaResolver.loadBlockSchema(blockName, variantName);
 
       if (!schema) {
         return null;

@@ -130,7 +130,27 @@ export class SchemaResolver {
   /**
    * Load a block schema from the local filesystem
    */
-  static async loadBlockSchema(blockName: string): Promise<SchemaProperty | null> {
+  static async loadBlockSchema(blockName: string, variantName?: string): Promise<SchemaProperty | null> {
+    // Attempt to load the variant schema first
+    if (variantName) {
+      const variantCacheKey = `block:${blockName}.${variantName}`;
+      if (this.schemaCache.has(variantCacheKey)) {
+        return this.schemaCache.get(variantCacheKey) as SchemaProperty;
+      }
+
+      try {
+        const variantSchema = await this.loadSchemaFromHttp(`blocks/${blockName}.${variantName}.schema.json`);
+        if (variantSchema) {
+          const resolvedSchema = await this.resolveAllRefsInSchema(variantSchema);
+          this.schemaCache.set(variantCacheKey, resolvedSchema as SchemaProperty);
+          return resolvedSchema;
+        }
+      } catch (error) {
+        // Variant not found, which is okay. We'll fall back to the default.
+      }
+    }
+
+    // Fallback to the default schema
     const cacheKey = `block:${blockName}`;
 
     if (this.schemaCache.has(cacheKey)) {
