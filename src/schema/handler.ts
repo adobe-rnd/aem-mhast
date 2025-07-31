@@ -26,8 +26,8 @@ export async function handleSchemaExtraction(htmlNode: Element, ctx: Ctx): Promi
   // Add parent pointers to the HAST tree for advanced CSS selectors
   addParentPointers(htmlNode);
 
-  // Initialize schema resolver (auto-detects development environment)
-  SchemaResolver.initialize();
+  // Create schema resolver instance with context
+  const schemaResolver = new SchemaResolver(ctx);
 
   const headNode = select('head', htmlNode) as Element;
   const mainNode = select('main', htmlNode) as Element;
@@ -36,7 +36,7 @@ export async function handleSchemaExtraction(htmlNode: Element, ctx: Ctx): Promi
     throw new Error('No <main> element found for schema extraction');
   }
 
-  const sections = await Extractor.extract(mainNode, ctx);
+  const sections = await Extractor.extract(mainNode, ctx, schemaResolver);
 
   const json = {
     sections,

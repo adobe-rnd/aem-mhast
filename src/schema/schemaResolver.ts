@@ -13,11 +13,12 @@
 // Schema resolver that loads schemas via HTTP (local dev server or remote)
 
 import { BlockSchema, PrimitiveSchema, SchemaProperty } from './types';
+import { Ctx } from '../context';
 
 /**
  * Recursively resolve $ref properties until we get a schema with actual type
  */
-async function resolveSchemaRecursively(schema: any, resolver: typeof SchemaResolver): Promise<any> {
+async function resolveSchemaRecursively(schema: any, resolver: SchemaResolver): Promise<any> {
   // If schema has a direct type, we're done
   if (schema.type) {
     return schema;
@@ -72,7 +73,7 @@ async function resolveSchemaRecursively(schema: any, resolver: typeof SchemaReso
 /**
  * Deeply resolve all $ref properties in a schema, avoiding infinite recursion
  */
-async function deepResolveSchema(schema: any, resolver: typeof SchemaResolver, visited = new Set()): Promise<any> {
+async function deepResolveSchema(schema: any, resolver: SchemaResolver, visited = new Set()): Promise<any> {
   if (!schema || typeof schema !== 'object') {
     return schema;
   }
@@ -109,28 +110,23 @@ async function deepResolveSchema(schema: any, resolver: typeof SchemaResolver, v
 }
 
 /**
- * Local schema resolver for loading schemas from filesystem
+ * Schema resolver for loading schemas from EDS domain URLs
  */
 export class SchemaResolver {
-  private static schemaCache = new Map<string, BlockSchema | PrimitiveSchema>();
-  private static baseUrl: string = 'http://localhost:3001';
+  private schemaCache = new Map<string, BlockSchema | PrimitiveSchema>();
+  private baseUrl: string;
 
   /**
-   * Initialize the schema resolver with the base URL for schema server
+   * Initialize the schema resolver with context
    */
-  static initialize(baseUrl?: string) {
-    // Auto-detect environment if no baseUrl provided
-    if (!baseUrl) {
-      // In worker development, use the Express.js proxy server
-      baseUrl = 'http://127.0.0.1:3001';
-    }
-    this.baseUrl = baseUrl;
+  constructor(ctx: Ctx) {
+    this.baseUrl = ctx.edsDomainUrl;
   }
 
   /**
-   * Load a block schema from the local filesystem
+   * Load a block schema from EDS domain
    */
-  static async loadBlockSchema(blockName: string, variantName?: string): Promise<SchemaProperty | null> {
+  async loadBlockSchema(blockName: string, variantName?: string): Promise<SchemaProperty | null> {
     // Attempt to load the variant schema first
     if (variantName) {
       const variantCacheKey = `block:${blockName}.${variantName}`;
@@ -139,7 +135,8 @@ export class SchemaResolver {
       }
 
       try {
-        const variantSchema = await this.loadSchemaFromHttp(`blocks/${blockName}.${variantName}.schema.json`);
+        const schemaUrl = `${this.baseUrl}/blocks/${blockName}/${blockName}.${variantName}.schema.json`;
+        const variantSchema = await this.loadSchemaFromHttp(schemaUrl);
         if (variantSchema) {
           const resolvedSchema = await this.resolveAllRefsInSchema(variantSchema);
           this.schemaCache.set(variantCacheKey, resolvedSchema as SchemaProperty);
@@ -158,7 +155,8 @@ export class SchemaResolver {
     }
 
     try {
-      const schema = await this.loadSchemaFromHttp(`blocks/${blockName}.schema.json`);
+      const schemaUrl = `${this.baseUrl}/blocks/${blockName}/${blockName}.schema.json`;
+      const schema = await this.loadSchemaFromHttp(schemaUrl);
       if (schema) {
         // Recursively resolve all $ref properties in the schema
         const resolvedSchema = await this.resolveAllRefsInSchema(schema);
@@ -174,9 +172,9 @@ export class SchemaResolver {
   }
 
   /**
-   * Load a primitive schema from the local filesystem
+   * Load a primitive schema from EDS domain
    */
-  static async loadPrimitiveSchema(primitiveName: string): Promise<PrimitiveSchema | null> {
+  async loadPrimitiveSchema(primitiveName: string): Promise<PrimitiveSchema | null> {
     const cacheKey = `primitive:${primitiveName}`;
 
     if (this.schemaCache.has(cacheKey)) {
@@ -184,7 +182,8 @@ export class SchemaResolver {
     }
 
     try {
-      const schema = await this.loadSchemaFromHttp(`primitives/${primitiveName}.schema.json`);
+      const schemaUrl = `${this.baseUrl}/schema/primitives/${primitiveName}.schema.json`;
+      const schema = await this.loadSchemaFromHttp(schemaUrl);
       if (schema) {
         // Recursively resolve all $ref properties in the schema
         const resolvedSchema = await this.resolveAllRefsInSchema(schema);
@@ -199,14 +198,10 @@ export class SchemaResolver {
     }
   }
 
-
-
   /**
-   * Load schema from HTTP endpoint (Express.js proxy or remote)
+   * Load schema from HTTP endpoint (EDS domain)
    */
-  private static async loadSchemaFromHttp(relativePath: string): Promise<any> {
-    const url = `${this.baseUrl}/schemas/${relativePath}`;
-
+  private async loadSchemaFromHttp(url: string): Promise<any> {
     try {
       const response = await fetch(url);
 
@@ -218,8 +213,7 @@ export class SchemaResolver {
       }
     } catch (error) {
       console.error(`Could not load schema from ${url}:`, error);
-      console.error(`Make sure the schema server is running: npm run schema-server`);
-      throw new Error(`Schema loading failed: ${relativePath}`);
+      throw new Error(`Schema loading failed: ${url}`);
     }
 
     return null;
@@ -228,7 +222,7 @@ export class SchemaResolver {
   /**
    * Resolve a $ref to a primitive schema
    */
-  static async resolvePrimitiveRef(ref: string): Promise<PrimitiveSchema | null> {
+  async resolvePrimitiveRef(ref: string): Promise<PrimitiveSchema | null> {
     // Handle relative refs like "../primitives/text.schema.json" or "text.schema.json"
     const primitiveMatch = ref.match(/([^/]+)\.schema\.json$/);
     if (primitiveMatch) {
@@ -243,42 +237,42 @@ export class SchemaResolver {
   /**
    * Get list of supported block types
    */
-  static getSupportedBlocks(): string[] {
+  getSupportedBlocks(): string[] {
     return ['hero', 'cards', 'tabs'];
   }
 
   /**
    * Get list of supported primitive types
    */
-  static getSupportedPrimitives(): string[] {
+  getSupportedPrimitives(): string[] {
     return ['text', 'h1', 'h2', 'h3', 'paragraph', 'link', 'picture', 'list'];
   }
 
   /**
    * Check if a block type is supported
    */
-  static isSupportedBlock(blockName: string): boolean {
+  isSupportedBlock(blockName: string): boolean {
     return this.getSupportedBlocks().includes(blockName);
   }
 
   /**
    * Check if a primitive type is supported
    */
-  static isSupportedPrimitive(primitiveName: string): boolean {
+  isSupportedPrimitive(primitiveName: string): boolean {
     return this.getSupportedPrimitives().includes(primitiveName);
   }
 
   /**
    * Recursively resolve all $ref properties in a schema
    */
-  private static async resolveAllRefsInSchema(schema: any): Promise<any> {
+  private async resolveAllRefsInSchema(schema: any): Promise<any> {
     return await deepResolveSchema(schema, this);
   }
 
   /**
    * Clear the schema cache
    */
-  static clearCache(): void {
+  clearCache(): void {
     this.schemaCache.clear();
   }
 } 

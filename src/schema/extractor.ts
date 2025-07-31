@@ -41,9 +41,10 @@ export class Extractor {
    * Extract structured data from HTML body, organized by sections with preserved order
    * @param mainElement - The main HTML element to extract from
    * @param {Ctx} ctx - Extraction context containing configuration
+   * @param {SchemaResolver} schemaResolver - Schema resolver instance for loading schemas
    * @returns {Promise<any[]>} An array of section objects.
    */
-  static async extract(mainElement: Element, ctx: Ctx): Promise<any[]> {
+  static async extract(mainElement: Element, ctx: Ctx, schemaResolver: SchemaResolver): Promise<any[]> {
     // Find all sections in the main element
     const sectionDivs = selectAll(':scope > div', mainElement) as Element[];
 
@@ -52,7 +53,7 @@ export class Extractor {
     for (const sectionDiv of sectionDivs) {
       const sectionObject: Record<string, any> = {};
       // Extract all elements in this section (e..g, [{h1: '...'}, {p: '...'}])
-      const elements = await this.extractSectionElements(sectionDiv);
+      const elements = await this.extractSectionElements(sectionDiv, schemaResolver);
 
       // Aggregate elements into a single section object
       for (const element of elements) {
@@ -105,7 +106,7 @@ export class Extractor {
   /**
    * Extract all elements (blocks and primitives) from a section in document order
    */
-  private static async extractSectionElements(sectionDiv: Element): Promise<any[]> {
+  private static async extractSectionElements(sectionDiv: Element, schemaResolver: SchemaResolver): Promise<any[]> {
     const elements: any[] = [];
 
     // Get all child elements excluding section-metadata
@@ -127,8 +128,8 @@ export class Extractor {
         const blockName = classNames[0];
         const variantName = classNames[1]; // The second class is the variant
 
-        if (SchemaResolver.isSupportedBlock(blockName)) {
-          const blockData = await this.extractBlock(child, blockName, variantName);
+        if (schemaResolver.isSupportedBlock(blockName)) {
+          const blockData = await this.extractBlock(child, blockName, variantName, schemaResolver);
           if (blockData) {
             const finalBlockObject: { option?: string, data: any } = {
               data: blockData,
@@ -145,7 +146,7 @@ export class Extractor {
         }
       } else {
         // Check if it's a primitive element
-        const primitiveData = await this.extractPrimitive(child);
+        const primitiveData = await this.extractPrimitive(child, schemaResolver);
         if (primitiveData) {
           // Unwrapped format for primitives
           elements.push(primitiveData);
@@ -159,9 +160,9 @@ export class Extractor {
   /**
    * Extract a specific block using its schema
    */
-  private static async extractBlock(blockElement: Element, blockName: string, variantName?: string): Promise<Record<string, unknown> | null> {
+  private static async extractBlock(blockElement: Element, blockName: string, variantName: string | undefined, schemaResolver: SchemaResolver): Promise<Record<string, unknown> | null> {
     try {
-      const schema = await SchemaResolver.loadBlockSchema(blockName, variantName);
+      const schema = await schemaResolver.loadBlockSchema(blockName, variantName);
 
       if (!schema) {
         return null;
@@ -177,14 +178,14 @@ export class Extractor {
   /**
    * Extract data from a primitive element
    */
-  private static async extractPrimitive(element: Element): Promise<Record<string, any> | null> {
+  private static async extractPrimitive(element: Element, schemaResolver: SchemaResolver): Promise<Record<string, any> | null> {
     const tagName = element.tagName;
 
-    if (!SchemaResolver.isSupportedPrimitive(tagName)) {
+    if (!schemaResolver.isSupportedPrimitive(tagName)) {
       return null;
     }
 
-    const schema = await SchemaResolver.loadPrimitiveSchema(tagName);
+    const schema = await schemaResolver.loadPrimitiveSchema(tagName);
     if (!schema) {
       return null;
     }
