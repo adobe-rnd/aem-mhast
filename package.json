@@ -8,6 +8,7 @@
     "dev": "wrangler dev",
     "build": "wrangler build",
     "deploy": "wrangler deploy",
+    "deploy:schema-v2": "wrangler deploy --env schema-v2",
     "schema-server": "cd dev-tools/schema-server && npm install && npm start",
     "example:lightroom": "tsx examples/extract-lightroom.ts",
     "test:schema": "tsx examples/test-schema-extraction.ts",

@@ -12,5 +12,10 @@
 	],
 	"observability": {
 		"enabled": true
+	},
+	"env": {
+		"schema-v2": {
+			"name": "mhast-html-to-json-schema-v2"
+		}
 	}
 }
