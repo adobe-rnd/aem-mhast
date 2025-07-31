@@ -13,10 +13,11 @@
 export type Ctx = {
 	org: string;
 	site: string;
+	branch: string;
 	edsDomainUrl: string;
 	contentPath: string;
 	useSchema: boolean;
-    html: boolean;
+	html: boolean;
 };
 
 export function getCtx(url: string): Ctx {
@@ -28,12 +29,14 @@ export function getCtx(url: string): Ctx {
 	const preview = urlObj.searchParams.get('preview') === 'true';
 	const useSchema = urlObj.searchParams.get('schema') === 'true';
 	const html = urlObj.searchParams.get('html') === 'true';
+	const branch = urlObj.searchParams.get('branch') || 'main';
 	return {
 		org,
 		site,
-		edsDomainUrl: `https://main--${site}--${org}.aem.${preview ? 'page' : 'live'}`,
+		branch,
+		edsDomainUrl: `https://${branch}--${site}--${org}.aem.${preview ? 'page' : 'live'}`,
 		contentPath: rest.join('/') || '',
 		useSchema,
-		html
-	}
+		html,
+	};
 }
