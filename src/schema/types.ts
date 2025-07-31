@@ -16,9 +16,9 @@
 export interface BaseSchemaProperty {
   type?: string;
   description?: string;
-  'x-eds-selector'?: string;
-  'x-eds-attribute'?: string;
-  'x-eds-primitive-ref'?: boolean;
+  'x-aem-selector'?: string;
+  'x-aem-attribute'?: string;
+  'x-aem-base-ref'?: boolean;
   $ref?: string;
 }
 
@@ -27,7 +27,7 @@ export interface BaseSchemaProperty {
  */
 export interface StringSchemaProperty extends BaseSchemaProperty {
   type: 'string';
-  'x-eds-attribute'?: string;
+  'x-aem-attribute'?: string;
   format?: string;
 }
 
@@ -78,16 +78,16 @@ export interface BlockSchema {
 }
 
 /**
- * Primitive schema definition
+ * Base element schema definition
  */
-export interface PrimitiveSchema {
+export interface BaseElementSchema {
   $id?: string;
   $schema?: string;
   title?: string;
   description?: string;
   type?: string;
-  'x-eds-selector'?: string;
-  'x-eds-attribute'?: string;
+  'x-aem-selector'?: string;
+  'x-aem-attribute'?: string;
   properties?: Record<string, SchemaProperty>;
   required?: string[];
   $ref?: string;

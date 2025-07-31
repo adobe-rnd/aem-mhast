@@ -46,7 +46,7 @@ export type {
   ArraySchemaProperty,
   RefSchemaProperty,
   BlockSchema,
-  PrimitiveSchema,
+  BaseElementSchema,
   BaseSchemaProperty
 } from './types';
 

@@ -12,24 +12,10 @@
 
 import { select, selectAll } from 'hast-util-select';
 import { Element } from 'hast';
-import { getText } from '../utils';
 import { extractBlock as extractBlockData, extractValue } from './valueExtractor';
 import { SchemaResolver } from './schemaResolver';
-import { BlockSchema, PrimitiveSchema } from './types';
+import { BlockSchema, BaseElementSchema } from './types';
 import { Ctx } from '../context';
-
-// Section and element types
-interface ExtractedElement {
-  type: 'block' | 'primitive';
-  name: string;
-  data: any;
-  order: number;
-}
-
-interface ExtractedSection {
-  metadata?: Record<string, string>;
-  elements: any[];
-}
 
 /**
  * Schema-based content extractor focused on sections and document order
@@ -81,30 +67,7 @@ export class Extractor {
   }
 
   /**
-   * Extract section metadata from section-metadata div
-   */
-  private static extractSectionMetadata(sectionDiv: Element): Record<string, string> | undefined {
-    const metaDiv = select('div.section-metadata', sectionDiv);
-    if (!metaDiv) return undefined;
-
-    const meta: Record<string, string> = {};
-    (metaDiv.children || []).forEach((row: any) => {
-      if (row.type === 'element' && row.tagName === 'div' && row.children && row.children.length === 2) {
-        const keyNode = row.children[0];
-        const valueNode = row.children[1];
-        const key = keyNode && keyNode.type === 'element' ?
-          keyNode.children.map((n: any) => n.value || '').join('').trim().toLowerCase() : '';
-        const value = valueNode && valueNode.type === 'element' ?
-          valueNode.children.map((n: any) => n.value || '').join('').trim() : '';
-        if (key) meta[key] = value;
-      }
-    });
-
-    return Object.keys(meta).length ? meta : undefined;
-  }
-
-  /**
-   * Extract all elements (blocks and primitives) from a section in document order
+   * Extract all elements (blocks and base elements) from a section in document order
    */
   private static async extractSectionElements(sectionDiv: Element, schemaResolver: SchemaResolver): Promise<any[]> {
     const elements: any[] = [];
@@ -145,11 +108,11 @@ export class Extractor {
           }
         }
       } else {
-        // Check if it's a primitive element
-        const primitiveData = await this.extractPrimitive(child, schemaResolver);
-        if (primitiveData) {
-          // Unwrapped format for primitives
-          elements.push(primitiveData);
+        // Check if it's a base element
+        const baseElementData = await this.extractBaseElement(child, schemaResolver);
+        if (baseElementData) {
+          // Unwrapped format for base elements
+          elements.push(baseElementData);
         }
       }
     }
@@ -176,27 +139,27 @@ export class Extractor {
   }
 
   /**
-   * Extract data from a primitive element
+   * Extract data from a base element
    */
-  private static async extractPrimitive(element: Element, schemaResolver: SchemaResolver): Promise<Record<string, any> | null> {
+  private static async extractBaseElement(element: Element, schemaResolver: SchemaResolver): Promise<Record<string, any> | null> {
     const tagName = element.tagName;
 
-    if (!schemaResolver.isSupportedPrimitive(tagName)) {
+    if (!schemaResolver.isSupportedBaseElement(tagName)) {
       return null;
     }
 
-    const schema = await schemaResolver.loadPrimitiveSchema(tagName);
+    const schema = await schemaResolver.loadBaseElementSchema(tagName);
     if (!schema) {
       return null;
     }
 
-    return this.extractPrimitiveData(element, schema);
+    return this.extractBaseElementData(element, schema);
   }
 
   /**
-   * Helper function to extract data based on a primitive schema
+   * Helper function to extract data based on a base element schema
    */
-  private static async extractPrimitiveData(element: Element, schema: PrimitiveSchema): Promise<any> {
-    return extractBlockData(element, schema as BlockSchema, schema.title || 'primitive');
+  private static async extractBaseElementData(element: Element, schema: BaseElementSchema): Promise<any> {
+    return extractBlockData(element, schema as BlockSchema, schema.title || 'base-element');
   }
 } 

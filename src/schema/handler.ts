@@ -12,7 +12,6 @@
 
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
-import { extractHead } from '../extractHead';
 import { Extractor } from './extractor';
 import { SchemaResolver } from './schemaResolver';
 import { Ctx } from '../context';
@@ -29,7 +28,6 @@ export async function handleSchemaExtraction(htmlNode: Element, ctx: Ctx): Promi
   // Create schema resolver instance with context
   const schemaResolver = new SchemaResolver(ctx);
 
-  const headNode = select('head', htmlNode) as Element;
   const mainNode = select('main', htmlNode) as Element;
 
   if (!mainNode) {

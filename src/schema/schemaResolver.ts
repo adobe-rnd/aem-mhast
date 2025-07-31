@@ -12,7 +12,7 @@
 
 // Schema resolver that loads schemas via HTTP (local dev server or remote)
 
-import { BlockSchema, PrimitiveSchema, SchemaProperty } from './types';
+import { BlockSchema, BaseElementSchema, SchemaProperty } from './types';
 import { Ctx } from '../context';
 
 /**
@@ -27,7 +27,7 @@ async function resolveSchemaRecursively(schema: any, resolver: SchemaResolver): 
   // If schema has $ref, resolve it recursively
   if (schema.$ref) {
     try {
-      const resolvedSchema = await resolver.resolvePrimitiveRef(schema.$ref);
+      const resolvedSchema = await resolver.resolveBaseElementRef(schema.$ref);
       if (resolvedSchema) {
         // Recursively resolve the referenced schema
         const fullyResolvedSchema = await resolveSchemaRecursively(resolvedSchema, resolver);
@@ -38,8 +38,8 @@ async function resolveSchemaRecursively(schema: any, resolver: SchemaResolver): 
           'properties',        // Essential: for object types, contains child properties
           'items',             // Essential: for array types, defines item schema
           'required',          // Useful: for validation during extraction
-          'x-eds-selector',    // EDS-specific: element selector
-          'x-eds-attribute',   // EDS-specific: attribute to extract
+          'x-aem-selector',    // AEM-specific: element selector
+          'x-aem-attribute',   // AEM-specific: attribute to extract
           'description',       // Debug: helpful for understanding property purpose
           'format'             // Optional: for string types (uri, etc.)
         ];
@@ -57,7 +57,7 @@ async function resolveSchemaRecursively(schema: any, resolver: SchemaResolver): 
           ...cleanResolvedSchema,
           ...schema,
         };
-        mergedSchema['x-eds-primitive-ref'] = true; // Add the flag here
+        mergedSchema['x-aem-base-ref'] = true; // Add the flag here
         delete mergedSchema.$ref; // Clean up the now-resolved $ref
         return mergedSchema;
       }
@@ -113,7 +113,7 @@ async function deepResolveSchema(schema: any, resolver: SchemaResolver, visited 
  * Schema resolver for loading schemas from EDS domain URLs
  */
 export class SchemaResolver {
-  private schemaCache = new Map<string, BlockSchema | PrimitiveSchema>();
+  private schemaCache = new Map<string, BlockSchema | BaseElementSchema>();
   private baseUrl: string;
 
   /**
@@ -172,28 +172,28 @@ export class SchemaResolver {
   }
 
   /**
-   * Load a primitive schema from EDS domain
+   * Load a base element schema from EDS domain
    */
-  async loadPrimitiveSchema(primitiveName: string): Promise<PrimitiveSchema | null> {
-    const cacheKey = `primitive:${primitiveName}`;
+  async loadBaseElementSchema(elementName: string): Promise<BaseElementSchema | null> {
+    const cacheKey = `base:${elementName}`;
 
     if (this.schemaCache.has(cacheKey)) {
-      return this.schemaCache.get(cacheKey) as PrimitiveSchema;
+      return this.schemaCache.get(cacheKey) as BaseElementSchema;
     }
 
     try {
-      const schemaUrl = `${this.baseUrl}/schema/primitives/${primitiveName}.schema.json`;
+      const schemaUrl = `${this.baseUrl}/schema/base/${elementName}.schema.json`;
       const schema = await this.loadSchemaFromHttp(schemaUrl);
       if (schema) {
         // Recursively resolve all $ref properties in the schema
         const resolvedSchema = await this.resolveAllRefsInSchema(schema);
 
-        this.schemaCache.set(cacheKey, resolvedSchema as PrimitiveSchema);
-        return resolvedSchema as PrimitiveSchema;
+        this.schemaCache.set(cacheKey, resolvedSchema as BaseElementSchema);
+        return resolvedSchema as BaseElementSchema;
       }
       return null;
     } catch (error) {
-      console.warn(`Failed to load primitive schema for ${primitiveName}:`, error);
+      console.warn(`Failed to load base element schema for ${elementName}:`, error);
       return null;
     }
   }
@@ -220,17 +220,17 @@ export class SchemaResolver {
   }
 
   /**
-   * Resolve a $ref to a primitive schema
+   * Resolve a $ref to a base element schema
    */
-  async resolvePrimitiveRef(ref: string): Promise<PrimitiveSchema | null> {
-    // Handle relative refs like "../primitives/text.schema.json" or "text.schema.json"
-    const primitiveMatch = ref.match(/([^/]+)\.schema\.json$/);
-    if (primitiveMatch) {
-      const primitiveName = primitiveMatch[1];
-      return this.loadPrimitiveSchema(primitiveName);
+  async resolveBaseElementRef(ref: string): Promise<BaseElementSchema | null> {
+    // Handle relative refs like "../base/text.schema.json" or "text.schema.json"
+    const elementMatch = ref.match(/([^/]+)\.schema\.json$/);
+    if (elementMatch) {
+      const elementName = elementMatch[1];
+      return this.loadBaseElementSchema(elementName);
     }
 
-    console.warn(`Cannot resolve primitive reference: ${ref}`);
+    console.warn(`Cannot resolve base element reference: ${ref}`);
     return null;
   }
 
@@ -242,9 +242,9 @@ export class SchemaResolver {
   }
 
   /**
-   * Get list of supported primitive types
+   * Get list of supported base element types
    */
-  getSupportedPrimitives(): string[] {
+  getSupportedBaseElements(): string[] {
     return ['text', 'h1', 'h2', 'h3', 'paragraph', 'link', 'picture', 'list'];
   }
 
@@ -256,10 +256,10 @@ export class SchemaResolver {
   }
 
   /**
-   * Check if a primitive type is supported
+   * Check if a base element type is supported
    */
-  isSupportedPrimitive(primitiveName: string): boolean {
-    return this.getSupportedPrimitives().includes(primitiveName);
+  isSupportedBaseElement(elementName: string): boolean {
+    return this.getSupportedBaseElements().includes(elementName);
   }
 
   /**

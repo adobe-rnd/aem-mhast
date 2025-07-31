@@ -19,8 +19,8 @@ import { getText } from '../utils';
  * Constants for schema extraction
  */
 export const SCHEMA_CONSTANTS = {
-  SELECTOR: 'x-eds-selector',
-  ATTRIBUTE: 'x-eds-attribute',
+  SELECTOR: 'x-aem-selector',
+  ATTRIBUTE: 'x-aem-attribute',
   TEXT: 'text',
   TYPES: {
     ARRAY: 'array',

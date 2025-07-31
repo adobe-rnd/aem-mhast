@@ -57,8 +57,8 @@ export async function extractValue(
         (contextNode, property, sharedElement, propertyName) =>
           extractValue(contextNode, property, sharedElement, propertyName)
       );
-      // Check if the result came from a primitive $ref and unwrap it.
-      if (property['x-eds-primitive-ref'] && objectResult && typeof objectResult === 'object' && Object.keys(objectResult).length === 1) {
+      // Check if the result came from a base element $ref and unwrap it.
+      if (property['x-aem-base-ref'] && objectResult && typeof objectResult === 'object' && Object.keys(objectResult).length === 1) {
         const [key, value] = Object.entries(objectResult)[0];
         return value;
       }
