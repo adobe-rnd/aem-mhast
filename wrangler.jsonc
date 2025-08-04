@@ -16,6 +16,12 @@
 	"env": {
 		"schema-v2": {
 			"name": "mhast-html-to-json-schema-v2"
+		},
+		"local": {
+			"name": "mhast-html-to-json-local",
+			"vars": {
+				"SCHEMA_DOMAIN": "http://localhost:3001"
+			}
 		}
 	}
 }

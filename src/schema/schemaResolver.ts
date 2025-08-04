@@ -113,14 +113,18 @@ async function deepResolveSchema(schema: any, resolver: SchemaResolver, visited 
  * Schema resolver for loading schemas from EDS domain URLs
  */
 export class SchemaResolver {
-  private schemaCache = new Map<string, BlockSchema | BaseElementSchema>();
+  // Make cache static so it persists across requests
+  private static schemaCache = new Map<string, BlockSchema | BaseElementSchema>();
   private baseUrl: string;
 
   /**
-   * Initialize the schema resolver with context
-   */
+ * Initialize the schema resolver with context
+ */
   constructor(ctx: Ctx) {
-    this.baseUrl = ctx.edsDomainUrl;
+    // Use worker environment variable override if set, otherwise use context domain
+    const schemaDomain = ctx.env?.SCHEMA_DOMAIN;
+    this.baseUrl = schemaDomain || ctx.edsDomainUrl;
+    console.log(`[SchemaResolver] Initialized with schema baseUrl: ${this.baseUrl}`);
   }
 
   /**
@@ -130,8 +134,8 @@ export class SchemaResolver {
     // Attempt to load the variant schema first
     if (variantName) {
       const variantCacheKey = `block:${blockName}.${variantName}`;
-      if (this.schemaCache.has(variantCacheKey)) {
-        return this.schemaCache.get(variantCacheKey) as SchemaProperty;
+      if (SchemaResolver.schemaCache.has(variantCacheKey)) {
+        return SchemaResolver.schemaCache.get(variantCacheKey) as SchemaProperty;
       }
 
       try {
@@ -139,19 +143,20 @@ export class SchemaResolver {
         const variantSchema = await this.loadSchemaFromHttp(schemaUrl);
         if (variantSchema) {
           const resolvedSchema = await this.resolveAllRefsInSchema(variantSchema);
-          this.schemaCache.set(variantCacheKey, resolvedSchema as SchemaProperty);
+          SchemaResolver.schemaCache.set(variantCacheKey, resolvedSchema as SchemaProperty);
           return resolvedSchema;
         }
       } catch (error) {
-        // Variant not found, which is okay. We'll fall back to the default.
+        console.warn(`Failed to load block schema for ${blockName} variant ${variantName}:`, error);
+        // Variant not found, which is okay. We'll try the base block schema.
       }
     }
 
-    // Fallback to the default schema
+    // Try to load the base block schema
     const cacheKey = `block:${blockName}`;
 
-    if (this.schemaCache.has(cacheKey)) {
-      return this.schemaCache.get(cacheKey) as SchemaProperty;
+    if (SchemaResolver.schemaCache.has(cacheKey)) {
+      return SchemaResolver.schemaCache.get(cacheKey) as SchemaProperty;
     }
 
     try {
@@ -161,7 +166,7 @@ export class SchemaResolver {
         // Recursively resolve all $ref properties in the schema
         const resolvedSchema = await this.resolveAllRefsInSchema(schema);
 
-        this.schemaCache.set(cacheKey, resolvedSchema as SchemaProperty);
+        SchemaResolver.schemaCache.set(cacheKey, resolvedSchema as SchemaProperty);
         return resolvedSchema as SchemaProperty;
       }
       return null;
@@ -177,8 +182,8 @@ export class SchemaResolver {
   async loadBaseElementSchema(elementName: string): Promise<BaseElementSchema | null> {
     const cacheKey = `base:${elementName}`;
 
-    if (this.schemaCache.has(cacheKey)) {
-      return this.schemaCache.get(cacheKey) as BaseElementSchema;
+    if (SchemaResolver.schemaCache.has(cacheKey)) {
+      return SchemaResolver.schemaCache.get(cacheKey) as BaseElementSchema;
     }
 
     try {
@@ -188,7 +193,7 @@ export class SchemaResolver {
         // Recursively resolve all $ref properties in the schema
         const resolvedSchema = await this.resolveAllRefsInSchema(schema);
 
-        this.schemaCache.set(cacheKey, resolvedSchema as BaseElementSchema);
+        SchemaResolver.schemaCache.set(cacheKey, resolvedSchema as BaseElementSchema);
         return resolvedSchema as BaseElementSchema;
       }
       return null;
@@ -206,13 +211,14 @@ export class SchemaResolver {
       const response = await fetch(url);
 
       if (response.ok) {
+        console.log(`[SchemaResolver] Successfully fetched: ${url}`);
         const json = await response.json();
         return json;
       } else {
-        console.warn(`Schema not found: ${url} (${response.status})`);
+        console.warn(`[SchemaResolver] Schema not found: ${url} (${response.status})`);
       }
     } catch (error) {
-      console.error(`Could not load schema from ${url}:`, error);
+      console.error(`[SchemaResolver] Could not load schema from ${url}:`, error);
       throw new Error(`Schema loading failed: ${url}`);
     }
 
@@ -273,6 +279,6 @@ export class SchemaResolver {
    * Clear the schema cache
    */
   clearCache(): void {
-    this.schemaCache.clear();
+    SchemaResolver.schemaCache.clear();
   }
 } 

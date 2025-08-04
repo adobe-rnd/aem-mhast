@@ -21,13 +21,13 @@ import { handleSchemaExtraction } from './schema';
 
 
 export default {
-	async fetch(request: Request): Promise<Response> {
+	async fetch(request: Request, env: any): Promise<Response> {
 		try {
 			if (new URL(request.url).pathname === '/favicon.ico') {
 				return new Response('', { status: 404 });
 			}
 
-			const ctx = getCtx(request.url);
+			const ctx = getCtx(request.url, env);
 			const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
 			const edsResp = await fetch(edsContentUrl);
 			if (!edsResp.ok) {

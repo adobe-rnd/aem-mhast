@@ -18,9 +18,10 @@ export type Ctx = {
 	contentPath: string;
 	useSchema: boolean;
 	html: boolean;
+	env?: any;
 };
 
-export function getCtx(url: string): Ctx {
+export function getCtx(url: string, env?: any): Ctx {
 	const urlObj = new URL(url);
 	const [, org, site, ...rest] = urlObj.pathname.split('/');
 	if (!org || !site) {
@@ -38,5 +39,6 @@ export function getCtx(url: string): Ctx {
 		contentPath: rest.join('/') || '',
 		useSchema,
 		html,
+		env,
 	};
 }
