@@ -7,13 +7,20 @@
   "scripts": {
     "dev": "wrangler dev",
     "build": "wrangler build",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "deploy:schema-v2": "wrangler deploy --env schema-v2",
+    "schema-server": "cd dev-tools/schema-server && npm install && npm start",
+    "example:lightroom": "tsx examples/extract-lightroom.ts",
+    "test:schema": "tsx examples/test-schema-extraction.ts",
+    "generate:outputs": "tsx examples/generate-outputs.ts"
   },
   "dependencies": {
+    "css-select": "^6.0.0",
     "hast-util-format": "^1.1.0",
     "hast-util-select": "^6.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-whitespace": "^3.0.0",
+    "property-information": "^7.1.0",
     "rehype-parse": "^9.0.0",
     "unified": "^11.0.4",
     "unist-util-remove": "^4.0.0",
@@ -22,6 +29,8 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.53",
     "@types/hast": "^3.0.4",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
     "wrangler": "^4.24.4"

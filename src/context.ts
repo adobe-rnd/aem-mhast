@@ -13,30 +13,32 @@
 export type Ctx = {
 	org: string;
 	site: string;
+	branch: string;
 	edsDomainUrl: string;
 	contentPath: string;
 	useSchema: boolean;
-	compact: boolean;
-	includeHead: boolean;
+	html: boolean;
+	env?: any;
 };
 
-export function getCtx(url: string): Ctx {
+export function getCtx(url: string, env?: any): Ctx {
 	const urlObj = new URL(url);
 	const [, org, site, ...rest] = urlObj.pathname.split('/');
 	if (!org || !site) {
 		throw new Error('Usage: /org/site/path');
 	}
-	const compact = urlObj.searchParams.get('compact') === 'true';
-	const includeHead = urlObj.searchParams.get('head') !== 'false';
+	const preview = urlObj.searchParams.get('preview') === 'true';
 	const useSchema = urlObj.searchParams.get('schema') === 'true';
-
+	const html = urlObj.searchParams.get('html') === 'true';
+	const branch = urlObj.searchParams.get('branch') || 'main';
 	return {
 		org,
 		site,
-		edsDomainUrl: `https://main--${site}--${org}.aem.live`,
+		branch,
+		edsDomainUrl: `https://${branch}--${site}--${org}.aem.${preview ? 'page' : 'live'}`,
 		contentPath: rest.join('/') || '',
-		compact,
-		includeHead,
-		useSchema
-	}
+		useSchema,
+		html,
+		env,
+	};
 }

@@ -10,7 +10,6 @@
  * governing permissions and limitations under the License.
  */
 
-import { fetchBlockSchema, extractBlockWithSchema } from './blockSchemaResolver';
 import { Ctx } from './context';
 import { extractContentElement } from './extractContent';
 
@@ -29,31 +28,10 @@ export async function extractBlock(node: any, ctx: Ctx): Promise<{ options?: Rec
 	const { properties = {} } = node;
 	const name = properties.className[0];
 	const options = extractBlockOptions(properties.className, name);
-	let blockContent: any = null;
 
-	// Try to fetch schema first
-	let schema = null;
-	if (ctx && ctx.useSchema) {
-		try {
-			schema = await fetchBlockSchema(name, ctx);
-		} catch (error) {
-			console.warn(`Error fetching schema for block ${name}:`, error);
-		}
-	}
-
-	if (schema) {
-		// Schema exists - apply it
-		try {
-			blockContent = extractBlockWithSchema(node, schema, name);
-		} catch (error) {
-			console.warn(`Error applying schema for block ${name}:`, error);
-			blockContent = {}; // Return empty data if schema application fails
-		}
-	} else {
-		// No schema available use generic content extraction
-		const contentElement = (node.children || []).map((child: any) => extractContentElement(child, ctx));
-		blockContent = contentElement.filter(Boolean);
-	}
+	// Generic content extraction - schema extraction is handled separately in index.ts
+	const contentElement = (node.children || []).map((child: any) => extractContentElement(child, ctx));
+	const blockContent = contentElement.filter(Boolean);
 
 	const result: any = {
 		type: 'block',
