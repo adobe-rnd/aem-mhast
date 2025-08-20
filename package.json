@@ -14,6 +14,7 @@
     "hast-util-select": "^6.0.0",
     "hast-util-to-html": "^9.0.5",
     "hast-util-whitespace": "^3.0.0",
+    "jq-web": "github:stainless-api/jq-web",
     "rehype-parse": "^9.0.0",
     "unified": "^11.0.4",
     "unist-util-remove": "^4.0.0",

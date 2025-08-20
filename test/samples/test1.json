@@ -1,0 +1,1182 @@
+{
+    "type": "element",
+    "tagName": "html",
+    "properties": {},
+    "children": [
+      {
+        "type": "element",
+        "tagName": "head",
+        "properties": {},
+        "children": [
+          {
+            "type": "element",
+            "tagName": "title",
+            "properties": {},
+            "children": [
+              {
+                "type": "text",
+                "value": "Exploring the Open Road"
+              }
+            ]
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "description",
+              "content": "Biking isn’t just a mode of transportation — it’s a lifestyle, an escape, and a way to reconnect with yourself and the world around you. ..."
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:title",
+              "content": "Exploring the Open Road"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:description",
+              "content": "Biking isn’t just a mode of transportation — it’s a lifestyle, an escape, and a way to reconnect with yourself and the world around you. ..."
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:url",
+              "content": "https://main--mhast-demo--aabsites.aem.live/biking"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:image",
+              "content": "https://main--mhast-demo--aabsites.aem.live/media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=1200&format=pjpg&optimize=medium"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:image:secure_url",
+              "content": "https://main--mhast-demo--aabsites.aem.live/media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=1200&format=pjpg&optimize=medium"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "property": "og:image:alt",
+              "content": "Decorative double Helix"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "twitter:card",
+              "content": "summary_large_image"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "twitter:title",
+              "content": "Exploring the Open Road"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "twitter:description",
+              "content": "Biking isn’t just a mode of transportation — it’s a lifestyle, an escape, and a way to reconnect with yourself and the world around you. ..."
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "twitter:image",
+              "content": "https://main--mhast-demo--aabsites.aem.live/media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=1200&format=pjpg&optimize=medium"
+            }
+          },
+          {
+            "type": "element",
+            "tagName": "meta",
+            "properties": {
+              "name": "viewport",
+              "content": "width=device-width, initial-scale=1"
+            }
+          }
+        ],
+        "aem-role": "metadata"
+      },
+      {
+        "type": "element",
+        "tagName": "body",
+        "properties": {},
+        "children": [
+          {
+            "type": "element",
+            "tagName": "header",
+            "properties": {}
+          },
+          {
+            "type": "element",
+            "tagName": "main",
+            "properties": {},
+            "children": [
+              {
+                "type": "element",
+                "tagName": "div",
+                "properties": {},
+                "children": [
+                  {
+                    "type": "element",
+                    "tagName": "h1",
+                    "properties": {
+                      "id": "exploring-the-open-road"
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "strong",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "Exploring the Open Road"
+                          }
+                        ],
+                        "aem-role": "emphasis"
+                      }
+                    ],
+                    "aem-role": "heading",
+                    "level": 1
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "div",
+                    "properties": {
+                      "className": [
+                        "hero"
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "picture",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "element",
+                                        "tagName": "source",
+                                        "properties": {
+                                          "type": "image/webp",
+                                          "srcSet": "./media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=2000&format=webply&optimize=medium",
+                                          "media": "(min-width: 600px)"
+                                        }
+                                      },
+                                      {
+                                        "type": "element",
+                                        "tagName": "source",
+                                        "properties": {
+                                          "type": "image/webp",
+                                          "srcSet": "./media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=750&format=webply&optimize=medium"
+                                        }
+                                      },
+                                      {
+                                        "type": "element",
+                                        "tagName": "source",
+                                        "properties": {
+                                          "type": "image/avif",
+                                          "srcSet": "./media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=2000&format=avif&optimize=medium",
+                                          "media": "(min-width: 600px)"
+                                        }
+                                      },
+                                      {
+                                        "type": "element",
+                                        "tagName": "img",
+                                        "properties": {
+                                          "loading": "lazy",
+                                          "alt": "Decorative double Helix",
+                                          "src": "./media_17a75e5350223daabdeb8b359ac78f1aedbda57c3.avif?width=750&format=avif&optimize=medium",
+                                          "width": 2048,
+                                          "height": 1365
+                                        }
+                                      }
+                                    ],
+                                    "aem-role": "image"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "h1",
+                                "properties": {
+                                  "id": "discover-the-joy-of-biking--from-scenic-routes-to-heart-pumping-trails-your-next-ride-starts-here"
+                                },
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Discover the joy of biking — from scenic routes to heart-pumping trails, your next ride starts here."
+                                  }
+                                ],
+                                "aem-role": "heading",
+                                "level": 1
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      }
+                    ],
+                    "aem-role": "block",
+                    "name": "hero",
+                    "options": []
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "p",
+                    "properties": {},
+                    "children": [
+                      {
+                        "type": "text",
+                        "value": "Biking isn’t just a mode of transportation — it’s a lifestyle, an escape, and a way to reconnect with yourself and the world around you. Whether you’re gliding along peaceful backroads or weaving through an energetic cityscape, every ride is a new opportunity to feel alive."
+                      }
+                    ],
+                    "aem-role": "paragraph"
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "h2",
+                    "properties": {
+                      "id": "reasons-to-love-biking"
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "strong",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "Reasons to Love Biking"
+                          }
+                        ],
+                        "aem-role": "emphasis"
+                      }
+                    ],
+                    "aem-role": "heading",
+                    "level": 2
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "ol",
+                    "properties": {},
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "li",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "strong",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "text",
+                                "value": "Adventure Everywhere"
+                              }
+                            ],
+                            "aem-role": "emphasis"
+                          },
+                          {
+                            "type": "text",
+                            "value": " – Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                          }
+                        ],
+                        "aem-role": "list-item"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "li",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "strong",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "text",
+                                "value": "Fitness on the Go"
+                              }
+                            ],
+                            "aem-role": "emphasis"
+                          },
+                          {
+                            "type": "text",
+                            "value": " – Sed ut perspiciatis unde omnis iste natus error sit voluptatem."
+                          }
+                        ],
+                        "aem-role": "list-item"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "li",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "strong",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "text",
+                                "value": "Eco-Friendly Travel"
+                              }
+                            ],
+                            "aem-role": "emphasis"
+                          },
+                          {
+                            "type": "text",
+                            "value": " – Quis autem vel eum iure reprehenderit qui in ea voluptate."
+                          }
+                        ],
+                        "aem-role": "list-item"
+                      }
+                    ],
+                    "aem-role": "list",
+                    "ordered": true
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "h2",
+                    "properties": {
+                      "id": "explore-more-articles"
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "strong",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "text",
+                            "value": "Explore More Articles"
+                          }
+                        ],
+                        "aem-role": "emphasis"
+                      }
+                    ],
+                    "aem-role": "heading",
+                    "level": 2
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "div",
+                    "properties": {
+                      "className": [
+                        "cards"
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1eeb122673557bf64a132b4c1f6005e4add233270.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1eeb122673557bf64a132b4c1f6005e4add233270.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_1eeb122673557bf64a132b4c1f6005e4add233270.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "A fast-moving Tunnel",
+                                      "src": "./media_1eeb122673557bf64a132b4c1f6005e4add233270.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 426
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Unmatched speed"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Helix is the fastest way to publish, create, and serve websites"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_18267d0ca999ad38c3e21d388a0e820952e8448dc.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_18267d0ca999ad38c3e21d388a0e820952e8448dc.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_18267d0ca999ad38c3e21d388a0e820952e8448dc.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "An iceberg",
+                                      "src": "./media_18267d0ca999ad38c3e21d388a0e820952e8448dc.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 516
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Content at scale"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Helix allows you to publish more content in shorter time with smaller teams"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_148dd5f9dd8467f364e593ab72e0cefba3f69982e.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_148dd5f9dd8467f364e593ab72e0cefba3f69982e.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_148dd5f9dd8467f364e593ab72e0cefba3f69982e.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "Doors with light in the dark",
+                                      "src": "./media_148dd5f9dd8467f364e593ab72e0cefba3f69982e.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 417
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Uncertainty eliminated"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Preview content at 100% fidelity, get predictable content velocity, and shorten project durations"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1bd92b42ee4800f68be23cc7fba1d1e77d32cd7bb.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1bd92b42ee4800f68be23cc7fba1d1e77d32cd7bb.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_1bd92b42ee4800f68be23cc7fba1d1e77d32cd7bb.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "A group of people around a Table",
+                                      "src": "./media_1bd92b42ee4800f68be23cc7fba1d1e77d32cd7bb.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 490
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Widen the talent pool"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Authors on Helix use Microsoft Word, Excel or Google Docs and need no training"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1455ccab201c8e9e5a91b8bc367769bf1a60f15cb.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1455ccab201c8e9e5a91b8bc367769bf1a60f15cb.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_1455ccab201c8e9e5a91b8bc367769bf1a60f15cb.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "HTML code in a code editor",
+                                      "src": "./media_1455ccab201c8e9e5a91b8bc367769bf1a60f15cb.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 496
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "The low-code way to developer productivity"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Say goodbye to complex APIs spanning multiple languages. Anyone with a little bit of HTML, CSS, and JS can build a site on Project Helix."
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_12bd299f565328ef95e080e61fa25970face4d058.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_12bd299f565328ef95e080e61fa25970face4d058.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_12bd299f565328ef95e080e61fa25970face4d058.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "A rocket and a headless suit",
+                                      "src": "./media_12bd299f565328ef95e080e61fa25970face4d058.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 500
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Headless is here"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Go directly from Microsoft Excel or Google Sheets to the web in mere seconds. Sanitize and collect form data at extreme scale with Project Helix Forms."
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      },
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "picture",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1063af6164c583aec9bc9089712790e86135b5af0.jpg?width=2000&format=webply&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/webp",
+                                      "srcSet": "./media_1063af6164c583aec9bc9089712790e86135b5af0.jpg?width=750&format=webply&optimize=medium"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "source",
+                                    "properties": {
+                                      "type": "image/jpeg",
+                                      "srcSet": "./media_1063af6164c583aec9bc9089712790e86135b5af0.jpg?width=2000&format=jpg&optimize=medium",
+                                      "media": "(min-width: 600px)"
+                                    }
+                                  },
+                                  {
+                                    "type": "element",
+                                    "tagName": "img",
+                                    "properties": {
+                                      "loading": "lazy",
+                                      "alt": "A dial with a hand on it",
+                                      "src": "./media_1063af6164c583aec9bc9089712790e86135b5af0.jpg?width=750&format=jpg&optimize=medium",
+                                      "width": 750,
+                                      "height": 525
+                                    }
+                                  }
+                                ],
+                                "aem-role": "image"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          },
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "element",
+                                    "tagName": "strong",
+                                    "properties": {},
+                                    "children": [
+                                      {
+                                        "type": "text",
+                                        "value": "Peak performance"
+                                      }
+                                    ],
+                                    "aem-role": "emphasis"
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              },
+                              {
+                                "type": "element",
+                                "tagName": "p",
+                                "properties": {},
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Use Project Helix's serverless architecture to meet any traffic need. Use Project Helix's PageSpeed Insights Github action to evaluate every Pull-Request for Lighthouse Score."
+                                  }
+                                ],
+                                "aem-role": "paragraph"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      }
+                    ],
+                    "aem-role": "block",
+                    "name": "cards",
+                    "options": []
+                  },
+                  {
+                    "type": "element",
+                    "tagName": "div",
+                    "properties": {
+                      "className": [
+                        "fragment"
+                      ]
+                    },
+                    "children": [
+                      {
+                        "type": "element",
+                        "tagName": "div",
+                        "properties": {},
+                        "children": [
+                          {
+                            "type": "element",
+                            "tagName": "div",
+                            "properties": {},
+                            "children": [
+                              {
+                                "type": "element",
+                                "tagName": "a",
+                                "properties": {
+                                  "href": "/fragment"
+                                },
+                                "children": [
+                                  {
+                                    "type": "text",
+                                    "value": "Sample fragment"
+                                  }
+                                ],
+                                "aem-role": "link"
+                              }
+                            ],
+                            "aem-role": "cell"
+                          }
+                        ],
+                        "aem-role": "row"
+                      }
+                    ],
+                    "aem-role": "block",
+                    "name": "fragment",
+                    "options": []
+                  }
+                ],
+                "aem-role": "section"
+              }
+            ],
+            "aem-role": "main"
+          },
+          {
+            "type": "element",
+            "tagName": "footer",
+            "properties": {}
+          }
+        ],
+        "aem-role": "content"
+      }
+    ],
+    "aem-role": "page"
+  }

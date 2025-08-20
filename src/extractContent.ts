@@ -51,7 +51,7 @@ export function extractContentElement(node: any, ctx: Ctx): any {
   if (!node || node.type !== 'element') return null;
   
   const { tagName, properties = {} } = node;
-  const { compact } = ctx;
+  const compact = false; // TODO remove
   const type = tagName === 'p' ? 'paragraph' : tagName;
 
   if (compact) {

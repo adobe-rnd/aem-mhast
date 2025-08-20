@@ -17,6 +17,8 @@ export type Ctx = {
 	contentPath: string;
 	useSchema: boolean;
     html: boolean;
+    jq: string | null;
+    template: string | null;
 };
 
 export function getCtx(url: string): Ctx {
@@ -28,12 +30,17 @@ export function getCtx(url: string): Ctx {
 	const preview = urlObj.searchParams.get('preview') === 'true';
 	const useSchema = urlObj.searchParams.get('schema') === 'true';
 	const html = urlObj.searchParams.get('html') === 'true';
+	const jq = urlObj.searchParams.get('jq');
+	const template = urlObj.searchParams.get('template');
+  
 	return {
 		org,
 		site,
 		edsDomainUrl: `https://main--${site}--${org}.aem.${preview ? 'page' : 'live'}`,
 		contentPath: rest.join('/') || '',
 		useSchema,
-		html
+        html,
+		jq,
+        template
 	}
 }
