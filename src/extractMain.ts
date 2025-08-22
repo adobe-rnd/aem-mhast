@@ -17,6 +17,7 @@ import { Element } from 'hast';
 import { Ctx } from './context';
 import { isBlockDiv } from './utils';
 import { extractBlock } from './extractBlock';
+import { hastToJson } from './blocksToJson';
 
 /**
  * Extract section metadata from a <div class="section-metadata">.
@@ -32,8 +33,21 @@ export function extractSectionMetadata(sectionDiv: Element): Record<string, stri
     if (row.type === 'element' && row.tagName === 'div' && row.children && row.children.length === 2) {
       const keyNode = row.children[0];
       const valueNode = row.children[1];
-      const key = keyNode && keyNode.type === 'element' ? keyNode.children.map((n: any) => n.value || '').join('').trim().toLowerCase() : '';
-      const value = valueNode && valueNode.type === 'element' ? valueNode.children.map((n: any) => n.value || '').join('').trim() : '';
+      const key =
+        keyNode && keyNode.type === 'element'
+          ? keyNode.children
+              .map((n: any) => n.value || '')
+              .join('')
+              .trim()
+              .toLowerCase()
+          : '';
+      const value =
+        valueNode && valueNode.type === 'element'
+          ? valueNode.children
+              .map((n: any) => n.value || '')
+              .join('')
+              .trim()
+          : '';
       if (key) meta[key] = value;
     }
   });
@@ -63,7 +77,7 @@ async function extractSection(node: Element, ctx: Ctx): Promise<any> {
  * @param {boolean} compact
  * @returns {Promise<Array<{metadata?: Record<string, string>, section: any[]}>>}
  */
-export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ metadata?: Record<string, string>, section: any[] }>> {
+export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ metadata?: Record<string, string>; section: any[] }>> {
   if (!mainNode || !mainNode.children) return [];
 
   // Remove all whitespace text nodes
@@ -74,23 +88,37 @@ export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ 
     mainNode.children
       .filter((child: any) => child.type === 'element' && child.tagName === 'div')
       .map(async (sectionDiv: any) => {
-        const sectionContent = await Promise.all(
-          (sectionDiv.children || [])
-            .filter((child: any) =>
-              !(child.type === 'element' && child.tagName === 'div' && child.properties && child.properties.className && child.properties.className.includes('section-metadata'))
-            )
-            .map(async (child: any) => {
-              const result = await extractSection(child, ctx);
-              return Array.isArray(result) ? result : [result];
-            })
-        );
-
+        let sectionContent: any = {};
+        if (ctx.useSchema) {
+          const jsonForSection = hastToJson(sectionDiv);
+          const form = jsonForSection.metadata;
+          const schemaId = form.schemaId;
+          sectionContent = { form, [schemaId]: jsonForSection.data };
+        } else {
+          sectionContent = await Promise.all(
+            (sectionDiv.children || [])
+              .filter(
+                (child: any) =>
+                  !(
+                    child.type === 'element' &&
+                    child.tagName === 'div' &&
+                    child.properties &&
+                    child.properties.className &&
+                    child.properties.className.includes('section-metadata')
+                  )
+              )
+              .map(async (child: any) => {
+                const result = await extractSection(child, ctx);
+                return Array.isArray(result) ? result : [result];
+              })
+          );
+        }
         return {
           metadata: extractSectionMetadata(sectionDiv),
-          section: sectionContent.flat().filter(Boolean)
+          section: sectionContent,
         };
       })
   );
 
   return sections;
-} 
+}

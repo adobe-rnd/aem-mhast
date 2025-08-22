@@ -11,32 +11,33 @@
  */
 
 export type Ctx = {
-	org: string;
-	site: string;
-	edsDomainUrl: string;
-	contentPath: string;
-	useSchema: boolean;
-	compact: boolean;
-	includeHead: boolean;
+  org: string;
+  site: string;
+  edsDomainUrl: string;
+  contentPath: string;
+  useSchema: boolean;
+  compact: boolean;
+  includeHead: boolean;
 };
 
 export function getCtx(url: string): Ctx {
-	const urlObj = new URL(url);
-	const [, org, site, ...rest] = urlObj.pathname.split('/');
-	if (!org || !site) {
-		throw new Error('Usage: /org/site/path');
-	}
-	const compact = urlObj.searchParams.get('compact') === 'true';
-	const includeHead = urlObj.searchParams.get('head') !== 'false';
-	const useSchema = urlObj.searchParams.get('schema') === 'true';
+  const urlObj = new URL(url);
+  const [, org, site, ...rest] = urlObj.pathname.split('/');
+  if (!org || !site) {
+    throw new Error('Usage: /org/site/path');
+  }
+  const compact = urlObj.searchParams.get('compact') === 'true';
+  const includeHead = urlObj.searchParams.get('head') !== 'false';
+  const useSchema = urlObj.searchParams.get('schema') === 'true';
+  const usePreview = urlObj.searchParams.get('preview') === 'true';
 
-	return {
-		org,
-		site,
-		edsDomainUrl: `https://main--${site}--${org}.aem.live`,
-		contentPath: rest.join('/') || '',
-		compact,
-		includeHead,
-		useSchema
-	}
+  return {
+    org,
+    site,
+    edsDomainUrl: `https://main--${site}--${org}.aem.${usePreview ? 'page' : 'live'}`,
+    contentPath: rest.join('/') || '',
+    compact,
+    includeHead,
+    useSchema,
+  };
 }

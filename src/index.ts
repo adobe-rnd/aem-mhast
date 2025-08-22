@@ -17,35 +17,38 @@ import { Element } from 'hast';
 import { getCtx } from './context.js';
 
 export default {
-	async fetch(request: Request): Promise<Response> {
-		try {
-			if (new URL(request.url).pathname === '/favicon.ico') {
-				return new Response('', { status: 404 });
-			}
+  async fetch(request: Request): Promise<Response> {
+    try {
+      if (new URL(request.url).pathname === '/favicon.ico') {
+        return new Response('', { status: 404 });
+      }
 
-			const ctx = getCtx(request.url);
-			const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
-			const edsResp = await fetch(edsContentUrl);
-			if (!edsResp.ok) {
-				return new Response(`Failed to fetch EDS page: ${edsContentUrl}`, { status: edsResp.status });
-			}
+      const ctx = getCtx(request.url);
+      const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
+      const edsResp = await fetch(edsContentUrl, { cf: { scrapeShield: false } });
+      if (!edsResp.ok) {
+        return new Response(`Failed to fetch EDS page: ${edsContentUrl}`, { status: edsResp.status });
+      }
 
-			const html = await edsResp.text();
-			const tree = parseHtml(html);
-			const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
-			if (!htmlNode) throw new Error('No <html> root found');
+      const html = await edsResp.text();
+      const tree = parseHtml(html);
 
-			const headNode = select('head', htmlNode) as Element;
-			const mainNode = select('main', htmlNode) as Element;
-			const json = {
-				metadata: ctx.includeHead ? extractHead(headNode) : undefined,
-				content: await extractMain(mainNode, ctx),
-			};
-			return new Response(JSON.stringify(json, null, 2), {
-				headers: { 'content-type': 'application/json' },
-			});
-		} catch (err: any) {
-			return new Response(`Error: ${err.message || err}`, { status: 500 });
-		}
-	},
+      console.log(html);
+
+      const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
+      if (!htmlNode) throw new Error('No <html> root found');
+
+      const headNode = select('head', htmlNode) as Element;
+      const mainNode = select('main', htmlNode) as Element;
+      const json = {
+        metadata: ctx.includeHead ? extractHead(headNode) : undefined,
+        content: await extractMain(mainNode, ctx),
+      };
+      return new Response(JSON.stringify(json, null, 2), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (err: any) {
+      return new Response(`Error: ${err.message || err}`, { status: 500 });
+    }
+  },
 };

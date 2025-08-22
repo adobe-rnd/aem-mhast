@@ -7,10 +7,5 @@
 	"name": "mhast-html-to-json",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-07-10",
-	"compatibility_flags": [
-		"global_fetch_strictly_public"
-	],
-	"observability": {
-		"enabled": true
-	}
+	"compatibility_flags": ["global_fetch_strictly_public"]
 }

@@ -1,6 +1,16 @@
-// utils.ts
+/*
+ * Copyright 2025 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 
-import { Element, Text } from "hast";
+import { Element, Text } from 'hast';
 
 /**
  * Recursively extract text content from a node.
@@ -13,7 +23,7 @@ export function getText(node: Text | Element): string {
   if (!node.children) return '';
   return node.children
     .filter((child): child is Text | Element => child.type === 'text' || child.type === 'element')
-    .map(child => getText(child))
+    .map((child) => getText(child))
     .join('');
 }
 
@@ -48,4 +58,19 @@ export function isBlockDiv(node: any): boolean {
     node.properties.className &&
     !node.properties.className.includes('section-metadata')
   );
-} 
+}
+
+/**
+ * Sanitizes a string for use as class name.
+ * @param {string} name The unsanitized string
+ * @returns {string} The class name
+ */
+export function toClassName(name: string): string {
+  return typeof name === 'string'
+    ? name
+        .toLowerCase()
+        .replace(/[^0-9a-z]/gi, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '')
+    : '';
+}
