@@ -90,10 +90,16 @@ export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ 
       .map(async (sectionDiv: any) => {
         let sectionContent: any = {};
         if (ctx.useSchema) {
-          const jsonForSection = hastToJson(sectionDiv);
-          const form = jsonForSection.metadata;
-          const schemaId = form.schemaId;
-          sectionContent = { form, [schemaId]: jsonForSection.data };
+          const code = select('pre > code', sectionDiv);
+          if (code) {
+            const json = JSON.parse(code.children[0].value);
+            sectionContent = {  [json.schemaId]: json.data };            
+          } else {
+            const jsonForSection = hastToJson(sectionDiv);
+            const form = jsonForSection.metadata;
+            const schemaId = form.schemaId;
+            sectionContent = { form, [schemaId]: jsonForSection.data };
+          }
         } else {
           sectionContent = await Promise.all(
             (sectionDiv.children || [])

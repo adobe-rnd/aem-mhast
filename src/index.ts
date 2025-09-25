@@ -33,8 +33,6 @@ export default {
       const html = await edsResp.text();
       const tree = parseHtml(html);
 
-      console.log(html);
-
       const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
       if (!htmlNode) throw new Error('No <html> root found');
 
