@@ -18,6 +18,7 @@ export type Ctx = {
   useSchema: boolean;
   compact: boolean;
   includeHead: boolean;
+  transformer?: string;
 };
 
 export function getCtx(url: string): Ctx {
@@ -30,6 +31,7 @@ export function getCtx(url: string): Ctx {
   const includeHead = urlObj.searchParams.get('head') !== 'false';
   const useSchema = urlObj.searchParams.get('schema') === 'true';
   const usePreview = urlObj.searchParams.get('preview') === 'true';
+  const transformer = urlObj.searchParams.get('transformer') || undefined;
 
   return {
     org,
@@ -39,5 +41,6 @@ export function getCtx(url: string): Ctx {
     compact,
     includeHead,
     useSchema,
+    transformer,
   };
 }
