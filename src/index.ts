@@ -15,6 +15,7 @@ import { extractMain } from './extractMain';
 import { select } from 'hast-util-select';
 import { Element } from 'hast';
 import { getCtx } from './context.js';
+import { applyTransformer } from './transformers.js';
 
 export default {
   async fetch(request: Request): Promise<Response> {
@@ -24,6 +25,7 @@ export default {
       }
 
       const ctx = getCtx(request.url);
+      console.log('🔧 Context parsed:', JSON.stringify(ctx, null, 2));
       const edsContentUrl = `${ctx.edsDomainUrl}/${ctx.contentPath}`;
       const edsResp = await fetch(edsContentUrl, { cf: { scrapeShield: false } });
       if (!edsResp.ok) {
@@ -38,10 +40,16 @@ export default {
 
       const headNode = select('head', htmlNode) as Element;
       const mainNode = select('main', htmlNode) as Element;
-      const json = {
+      let json = {
         metadata: ctx.includeHead ? extractHead(headNode) : undefined,
         content: await extractMain(mainNode, ctx),
       };
+
+      // Apply transformer if specified
+      if (ctx.transformer) {
+        json = applyTransformer(json, ctx.transformer);
+      }
+
       return new Response(JSON.stringify(json, null, 2), {
         headers: { 'Content-Type': 'application/json' },
       });
