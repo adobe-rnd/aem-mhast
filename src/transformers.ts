@@ -98,10 +98,10 @@ export function compactTransformer(data: any): any {
  * Helper function to find and transform properties with '/content/dam/' values
  */
 function findAndTransformDamReferences(obj: any, references: any[] = []): any {
-  if (typeof obj === 'string' && obj.startsWith('/content/dam/')) {
+  if (typeof obj === 'string' && obj.includes('/content/dam/')) {
     // Transform the string to the required object format
     const transformedValue = {
-      _publishUrl: `https://odin.adobe.com${obj}`
+      _publishUrl: obj.startsWith('/content/dam/') ? `https://odin.adobe.com${obj}` : obj
     };
     // Add transformed object to references list
     references.push(transformedValue);

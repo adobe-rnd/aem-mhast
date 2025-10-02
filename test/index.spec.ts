@@ -134,4 +134,43 @@ describe('ffcPhotoshopTransformer', () => {
 		expect(result.data.appsPdpByPath.item.description).toBe('No DAM references here');
 		expect(result.data.appsPdpByPath._references).toBeUndefined();
 	});
+
+	it('should handle objects that already contain full https:// URLs with /content/dam/', () => {
+		const testData = {
+			content: [{
+				section: [{
+					type: 'block',
+					name: 'ffc-photoshop',
+					content: {
+						title: 'Test Content',
+						image: 'https://odin.adobe.com/content/dam/test-image.jpg',
+						background: 'https://example.com/content/dam/background.png',
+						localImage: '/content/dam/local-image.jpg',
+						externalImage: 'https://external.com/image.jpg'
+					}
+				}]
+			}]
+		};
+
+		const result = ffcPhotoshopTransformer(testData);
+
+		// Check the structure
+		expect(result.data.appsPdpByPath.item).toBeDefined();
+		
+		// Check that full URLs with /content/dam/ are preserved as-is
+		expect(result.data.appsPdpByPath.item.image._publishUrl).toBe('https://odin.adobe.com/content/dam/test-image.jpg');
+		expect(result.data.appsPdpByPath.item.background._publishUrl).toBe('https://example.com/content/dam/background.png');
+		expect(result.data.appsPdpByPath.item.localImage._publishUrl).toBe('https://odin.adobe.com/content/dam/local-image.jpg');
+		
+		// Check that URLs without /content/dam/ are unchanged
+		expect(result.data.appsPdpByPath.item.externalImage).toBe('https://external.com/image.jpg');
+		expect(result.data.appsPdpByPath.item.title).toBe('Test Content');
+		
+		// Check that _references array contains all transformed objects
+		expect(result.data.appsPdpByPath._references).toEqual([
+			{ _publishUrl: 'https://odin.adobe.com/content/dam/test-image.jpg' },
+			{ _publishUrl: 'https://example.com/content/dam/background.png' },
+			{ _publishUrl: 'https://odin.adobe.com/content/dam/local-image.jpg' }
+		]);
+	});
 });
