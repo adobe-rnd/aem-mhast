@@ -100,8 +100,9 @@ export function compactTransformer(data: any): any {
 function findAndTransformDamReferences(obj: any, references: any[] = []): any {
   if (typeof obj === 'string' && obj.includes('/content/dam/')) {
     // Transform the string to the required object format
+    const _publishUrl = obj.startsWith('/content/dam/') ? `https://odin.adobe.com${obj}` : obj
     const transformedValue = {
-      _publishUrl: obj.startsWith('/content/dam/') ? `https://odin.adobe.com${obj}` : obj
+      _publishUrl: _publishUrl.replaceAll('@', '%40'),
     };
     // Add transformed object to references list
     references.push(transformedValue);
