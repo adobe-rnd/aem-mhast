@@ -91,8 +91,12 @@ export function hastToJson(hastTree: Element) {
     const resolved: any = {};
 
     for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === 'string' && value.startsWith('#')) {
-        const refIds = value.split(',').map((id) => toClassName(id.substring(1).trim()));
+      const truelyArray = value.startsWith("__array[");
+      const emptyObject = value === "__array[]";
+
+      if (typeof value === "string" && ( truelyArray|| value.startsWith("#"))) {
+        const valueSanitized = value.startsWith("#") ? value : value.replace("__array[", "").replace("]", "");
+        const refIds = valueSanitized.split(",").map((id) => toClassName(id.substring(1).trim()));        
         const resolvedRefs = refIds.map((refId) => {
           if (blocks[refId]) {
             return resolveReferences(blocks[refId]);
@@ -103,7 +107,7 @@ export function hastToJson(hastTree: Element) {
         });
         resolved[key] = resolvedRefs.length === 1 ? resolvedRefs[0] : resolvedRefs;
       } else {
-        resolved[key] = value;
+        resolved[key] = emptyObject ? {} : value;
       }
     }
 
