@@ -15,10 +15,6 @@ export type Ctx = {
   site: string;
   edsDomainUrl: string;
   contentPath: string;
-  useSchema: boolean;
-  compact: boolean;
-  includeHead: boolean;
-  transformer?: string;
 };
 
 export function getCtx(url: string): Ctx {
@@ -27,20 +23,12 @@ export function getCtx(url: string): Ctx {
   if (!org || !site) {
     throw new Error('Usage: /org/site/path');
   }
-  const compact = urlObj.searchParams.get('compact') === 'true';
-  const includeHead = urlObj.searchParams.get('head') !== 'false';
-  const useSchema = urlObj.searchParams.get('schema') === 'true';
   const usePreview = urlObj.searchParams.get('preview') === 'true';
-  const transformer = urlObj.searchParams.get('transformer') || undefined;
 
   return {
     org,
     site,
     edsDomainUrl: `https://main--${site}--${org}.aem.${usePreview ? 'page' : 'live'}`,
-    contentPath: rest.join('/') || '',
-    compact,
-    includeHead,
-    useSchema,
-    transformer,
+    contentPath: rest.join('/') || ''
   };
 }
