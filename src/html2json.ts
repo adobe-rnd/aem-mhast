@@ -19,7 +19,7 @@ export default class HTMLConverter {
 
   convertBlocksToJson() {
     const metadata = this.getMetadata();
-    const data = this.findAndConvert(metadata.schemaName);
+    const data = this.findAndConvert(metadata.schemaName as string);
     return { metadata, data };
   }
 
@@ -40,7 +40,7 @@ export default class HTMLConverter {
   }
 
   getMetadata(): { schemaName: unknown } & BlockProperties {
-    const baseMeta = this.findAndConvert('da-form');
+    const baseMeta = this.findAndConvert('da-form' as string);
     const { 'x-schema-name': schemaName, 'x-storage-format': storageFormat, ...rest } = baseMeta as BlockProperties;
     return { schemaName, storageFormat, ...rest };
   }
@@ -48,7 +48,7 @@ export default class HTMLConverter {
   getProperties(block: Element): BlockProperties {
     return (block.children as Element[]).reduce((rdx: BlockProperties, row: Element) => {
       if (row.children) {
-        const elementChildren = (row.children as Element[]).filter(child => child.type === 'element');
+        const elementChildren = (row.children as Element[]).filter((child) => child.type === 'element');
         const [keyCol, valCol] = elementChildren;
         const key = toString(keyCol).trim();
         // If there's absolutely no children in cell, return an empty string
@@ -80,13 +80,12 @@ export default class HTMLConverter {
    * @param {Boolean} searchRef if the variation should be used for search
    * @returns {Object} the JSON Object representing pug
    */
-  findAndConvert(searchTerm: unknown, searchRef = false): BlockProperties {
-    return this.blocks.reduce((acc: BlockProperties, block) => {
+  findAndConvert(searchTerm: string, searchRef: boolean = false): BlockProperties {
+    return this.blocks.reduce((acc, block) => {
       // If we are looking for a reference,
       // use the variation, not the block name
       const idx = searchRef ? 1 : 0;
-      const className = block.properties?.className as string[] | undefined;
-      if (className?.[idx] === searchTerm) {
+      if ((block.properties?.className as string[] | undefined)?.[idx] === searchTerm) {
         return this.getProperties(block);
       }
       return acc;
@@ -96,11 +95,9 @@ export default class HTMLConverter {
   // We will always try to convert to a strong type.
   // The schema is responsible for knowing if it
   // is correct and converting back if necessary.
-  getTypedValue(value: string): unknown {
-    // It it doesn't exist, resolve to undefined
-    if (!value) {
-      return '';
-    }
+  getTypedValue(value: string): string | boolean | number | BlockProperties | null {
+    // It it doesn't exist, resolve to empty
+    if (!value) return '';
 
     // Attempt boolean
     const boolean = this.getBoolean(value);
@@ -118,15 +115,18 @@ export default class HTMLConverter {
   }
 
   getArrayValues(key: string, parent: Element[]): unknown[] {
-    return parent.map((listItem: Element) => {
-      const value = (listItem.children[0] as { value?: string })?.value;
-      if (!value) {
-        console.log(key);
-        return '';
+    return parent.reduce((acc: unknown[], listItem: Element) => {
+      // Only push non empty LIs
+      if (listItem.children.length > 0) {
+        const { value } = listItem.children[0] as { value: string };
+        if (!value) {
+          return acc;
+        }
+        const reference = this.getReference(value);
+        acc.push(reference ?? value);
       }
-      const reference = this.getReference(value);
-      return reference || value;
-    });
+      return acc;
+    }, []);
   }
 
   getReference(text: string): BlockProperties | null {
