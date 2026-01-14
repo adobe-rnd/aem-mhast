@@ -17,18 +17,28 @@ export type Ctx = {
   contentPath: string;
 };
 
+function getTld(tier: string): string {
+  if (tier === 'preview') return 'page';
+  if (tier === 'review') return 'reviews';
+  return 'live';
+}
+
 export function getCtx(url: string): Ctx {
   const urlObj = new URL(url);
-  const [, org, site, ...rest] = urlObj.pathname.split('/');
-  if (!org || !site) {
-    throw new Error('Usage: /org/site/path');
+  const [tier, org, site, ...rest] = urlObj.pathname
+        .replace('.json', '')
+        .slice(1)
+        .split('/');
+  const tld = getTld(tier);
+
+  if (!org && !site) {
+    throw new Error('Usage: /tld/org/site/path');
   }
-  const usePreview = urlObj.searchParams.get('preview') === 'true';
 
   return {
     org,
     site,
-    edsDomainUrl: `https://main--${site}--${org}.aem.${usePreview ? 'page' : 'live'}`,
+    edsDomainUrl: `https://main--${site}--${org}.aem.${tld}`,
     contentPath: rest.join('/') || ''
   };
 }
