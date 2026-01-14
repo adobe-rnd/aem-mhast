@@ -10,12 +10,7 @@
  * governing permissions and limitations under the License.
  */
 import { parseHtml } from './parseHtml.js';
-import { extractHead } from './extractHead';
-import { extractMain } from './extractMain';
-import { select } from 'hast-util-select';
-import { Element } from 'hast';
 import { getCtx } from './context.js';
-import { applyTransformer } from './transformers.js';
 import HTMLConverter from './html2json.js';
 
 export default {
@@ -34,28 +29,8 @@ export default {
       }
 
       const html = await edsResp.text();
-      const htmlDocument = parseHtml(html);
-      const converter = new HTMLConverter(htmlDocument);
-
-
+      const converter = new HTMLConverter(parseHtml(html));
       const json = converter.getJson();
-
-
-      // let json = {}
-      // if (ctx.useSchema) {
-      //   const htmlToJson = new HTMLConverter(mainNode);
-      //   json.content = htmlToJson.getJson();
-      // } else {
-      //   json = {
-      //     metadata: ctx.includeHead ? extractHead(headNode) : undefined,
-      //     content: await extractMain(mainNode, ctx),
-      //   };
-      // }
-
-      // // Apply transformer if specified
-      // if (ctx.transformer) {
-      //   json = applyTransformer(json, ctx.transformer);
-      // }
 
       return new Response(JSON.stringify(json, null, 2), {
         headers: { 'Content-Type': 'application/json' },
