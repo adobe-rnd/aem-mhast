@@ -17,7 +17,7 @@ import { Element } from 'hast';
 import { Ctx } from './context';
 import { isBlockDiv } from './utils';
 import { extractBlock } from './extractBlock';
-import { hastToJson } from './blocksToJson';
+import HTMLConverter from './html2json';
 
 /**
  * Extract section metadata from a <div class="section-metadata">.
@@ -95,10 +95,9 @@ export async function extractMain(mainNode: Element, ctx: Ctx): Promise<Array<{ 
             const json = JSON.parse(code.children[0].value);
             sectionContent = {  [json.schemaId]: json.data };            
           } else {
-            const jsonForSection = hastToJson(sectionDiv);
-            const form = jsonForSection.metadata;
-            const schemaId = form.schemaId;
-            sectionContent = { form, [schemaId]: jsonForSection.data };
+            const hastToJson = new HTMLConverter(sectionDiv);
+            const json = hastToJson.getJson();
+            sectionContent = { json };
           }
         } else {
           sectionContent = await Promise.all(

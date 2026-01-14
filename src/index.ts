@@ -16,6 +16,7 @@ import { select } from 'hast-util-select';
 import { Element } from 'hast';
 import { getCtx } from './context.js';
 import { applyTransformer } from './transformers.js';
+import HTMLConverter from './html2json.js';
 
 export default {
   async fetch(request: Request): Promise<Response> {
@@ -33,22 +34,28 @@ export default {
       }
 
       const html = await edsResp.text();
-      const tree = parseHtml(html);
+      const htmlDocument = parseHtml(html);
+      const converter = new HTMLConverter(htmlDocument);
 
-      const htmlNode = tree.children.find((n: any) => n.type === 'element' && n.tagName === 'html');
-      if (!htmlNode) throw new Error('No <html> root found');
 
-      const headNode = select('head', htmlNode) as Element;
-      const mainNode = select('main', htmlNode) as Element;
-      let json = {
-        metadata: ctx.includeHead ? extractHead(headNode) : undefined,
-        content: await extractMain(mainNode, ctx),
-      };
+      const json = converter.getJson();
 
-      // Apply transformer if specified
-      if (ctx.transformer) {
-        json = applyTransformer(json, ctx.transformer);
-      }
+
+      // let json = {}
+      // if (ctx.useSchema) {
+      //   const htmlToJson = new HTMLConverter(mainNode);
+      //   json.content = htmlToJson.getJson();
+      // } else {
+      //   json = {
+      //     metadata: ctx.includeHead ? extractHead(headNode) : undefined,
+      //     content: await extractMain(mainNode, ctx),
+      //   };
+      // }
+
+      // // Apply transformer if specified
+      // if (ctx.transformer) {
+      //   json = applyTransformer(json, ctx.transformer);
+      // }
 
       return new Response(JSON.stringify(json, null, 2), {
         headers: { 'Content-Type': 'application/json' },
